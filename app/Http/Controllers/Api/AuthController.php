@@ -178,7 +178,7 @@ class AuthController extends Controller
         ]);
 
         $uservervifaction=User_verfication::where('user_id',$user->id)->delete();
-        
+
         //resend otp
                 $verfication=[];
                 $verfication['user_id']=$user->id;
@@ -199,7 +199,7 @@ class AuthController extends Controller
                 DB::rollBack();
                 return response()->json([
                     'message' => $ex,
-                    'user' => 'd'
+                    'user' => ''
                 ], 404);
             }
      

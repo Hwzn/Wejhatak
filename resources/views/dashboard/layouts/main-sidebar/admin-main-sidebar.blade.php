@@ -95,6 +95,8 @@
                         </a>
                         <ul id="ShoHelps-menu" class="collapse" data-parent="#sidebarnav">
                             <li><a href="{{route('Showhelps')}}">{{trans('helps_trans.Helps_Types')}}</a></li>
+                            <li><a href="{{route('ShowhelpRequests')}}">{{trans('helps_trans.Requests_Help')}}</a></li>
+
                         </ul>
                     </li>
 

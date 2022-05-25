@@ -116,6 +116,14 @@ Route::group(
 
     //helps
     Route::get('/Showhelps',[HelpController::class,'index'])->name('Showhelps');
+    Route::get('/ShowhelpRequests',[HelpController::class,'helpRequests'])->name('ShowhelpRequests');
+    Route::get('/view_attachment/{filename}',[HelpController::class,'view_attachment'])->name('view_attachment');
+    Route::get('/requesthelpdetails/{id}',[HelpController::class,'showrequestdetials'])->name('requesthelpdetails');
+    Route::post('/updaterequesthelp_details',[HelpController::class,'updaterequesthelp_details'])->name('updaterequesthelp_details');
+
+    
+    
+    
     Route::post('/addhelp',[HelpController::class,'store'])->name('addhelp');
     Route::get('/edithelp/{id}',[HelpController::class,'edit'])->name('edithelp');
     Route::post('/update_help',[HelpController::class,'update'])->name('update_help');

@@ -2,6 +2,7 @@
 return[
     'Helps_Types'=>'Helps_Types',
     'Add_HelpType'=>'Add_HelpType',
+    'Requests_Help'=>'Requests_Help',
     'helpname'=>'helpname',
     'ar_name'=>'name_ar',
     'en_name'=>'name_en',

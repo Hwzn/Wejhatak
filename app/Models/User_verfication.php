@@ -9,6 +9,6 @@ class User_verfication extends Model
 {
     use HasFactory;
     public $table='users_verficationcode';
-    protected $fillable=['user_id','otpcode'];
+    protected $fillable=['user_id','otpcode','expired_at'];
 
 }

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use App\Models\Help;
+use App\Models\HelpRequest;
+
 class HelpController extends Controller
 {
      public function index()
@@ -90,5 +92,54 @@ class HelpController extends Controller
         return response()->json(['success'=>'deleted  success.']);
       }
     }
+
+    public function helpRequests()
+    {
+      $requests=HelpRequest::orderby('id','desc')->get();
+     // return $requests;
+      return view('dashboard.admin.helps.help_requests.requestshelp',compact('requests'));
+    }
+
+    public function view_attachment($filename)
+    {
+      return response()->download(public_path('assets/uploads/UserHelpRequests/'.$filename));
+
+    }
+
+    public function showrequestdetials($id)
+    {
+      $request_details=HelpRequest::findorfail($id);
+      return response()->json($request_details);
+    }
  
+    public function updaterequesthelp_details(Request $request)
+    {
+      $validator = Validator::make($request->all(),
+      [
+           'admin_reply'=>'required',
+           'admin_reply.required'=>trans('validation.required'),
+           'request_id'=>'required|exists:help_requests,id',
+           'request_id.required'=>trans('validation.required'),
+
+      ]);
+
+      if ($validator->fails())
+      {
+      return response()->json(['error'=>$validator->errors()->all()]);
+
+      }
+      else{
+        $data=HelpRequest::where('id',$request->request_id)->update([
+          'admin_reply'=>$request->admin_reply,
+          'status'=>'solved'
+        ]);
+  
+      
+        if(!is_null($data))
+        {
+          toastr()->success(trans('messages_trans.success'));
+          return response()->json(['success'=>'Added new records.']);
+        }
+      }
+    }
 }

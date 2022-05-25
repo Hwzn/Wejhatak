@@ -16,6 +16,7 @@ class HelpRequestController extends Controller
     {
         // $user=Auth::user();
         $helpimage="";
+        $rand_num=mt_rand(100000000,999999999);
         $validator = Validator::make($request->all(), [
             'help_id' => 'required|exists:helps,id',
             'user_id' => 'required|exists:users,id',
@@ -33,13 +34,13 @@ class HelpRequestController extends Controller
              {
                   $file=$request->file('photo');
                   $ext=$file->getClientOriginalExtension();
-                  $filename=$request->user_id.'_'.time().'.'.$ext;
+                  $filename=$rand_num.'.'.$ext;
                   $file->move('assets/uploads/UserHelpRequests',$filename);
                   $helpimage=$filename;
              }
          
              $user=HelpRequest::create([
-                 'ticket_num'=>mt_rand(100000000,999999999),
+                 'ticket_num'=>$rand_num,
                  'user_id'=>$request->user_id,
                  'help_id'=>$request->help_id,
                  'request_details'=>$request->request_details,

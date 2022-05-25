@@ -1,7 +1,8 @@
 <?php
 return[
-    'Helps_Types'=>'أنواع المساعدات',
+    'Helps_Types'=>'تصنيف المساعدات',
     'Add_HelpType'=>'اضافة نوع مساعدة',
+    'Requests_Help'=>'طلبات المساعدة',
     'helpname'=>'نوع المساعدة',
     'ar_name'=>'الإسم بالعربية',
     'en_name'=>'الإسم بالانجليزية',
@@ -15,5 +16,15 @@ return[
     'Message_Delete'=>'تم حذف بنجاح',
     'exists'=>' البيانات موجودة مسبقا',
     'Edit'=>'تعديل',
+    
+    'ticket_number'=>'رقم الطلب',
+    'user_name'=>'صاحب الطلب',
+    'help_type'=>'نوع الطلب',
+    'request_details'=>'تفاصيل الطلب',
+    'request_photo'=>'صورة الطلب',
+    'status'=>'حالة الطلب',
+    'View'=>'عرض',
+    'Request_Date'=>'تاريخ الطلب',
+    'admin_reply'=>'الرد',
   
 ];

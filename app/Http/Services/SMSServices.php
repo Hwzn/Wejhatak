@@ -2,6 +2,7 @@
 namespace App\Http\Services;
 use App\Models\User_verfication;
 use App\Models\User;
+use Carbon\Carbon;
 use Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,10 +13,17 @@ class SMSServices
 
     public function setVerficationCode($data)
     {
+        $today=Carbon::now();
         $otpcode=mt_rand(1000,9999);
         $data['otpcode']=$otpcode;
         User_verfication::where(['user_id'=>$data['user_id']])->delete();
-        return User_verfication::create($data);
+        // return User_verfication::create($data);
+        return User_verfication::create([
+            'user_id'=>$data['user_id'],
+            'otpcode'=>$data['otpcode'],
+            'expired_at'=>$today->addMinutes(05),
+        ]);
+
 		//هيبقي جيلك من $data>>user_id,oto_code
     }
 
@@ -26,10 +34,22 @@ class SMSServices
             $verificationdata=User_verfication::where('user_id',$user_id)->first();
            if($verificationdata->otpcode==$code)
            {
-               User::where('id',$user_id)->update([
-                   'verified_at'=>now(),
-               ]);
-               return true;
+                 $expiredate=$verificationdata->expired_at;
+                 $datenow=Carbon::now();
+                if($expiredate>$datenow)
+                {
+                    User::where('id',$user_id)->update([
+                        'verified_at'=>now(),
+                    ]);
+                    return true;
+                }
+                else
+                {
+                    return false;
+
+                }
+               
+                   
            }
            else
            {

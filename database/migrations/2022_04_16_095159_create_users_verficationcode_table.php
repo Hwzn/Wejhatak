@@ -19,7 +19,7 @@ class CreateUsersVerficationcodeTable extends Migration
             ->onDelete('CasCade')
             ->onUpdate('CasCade');
             $table->string('otpcode');
-            $table->date('expired_at');
+            $table->dateTime('expired_at');
             $table->timestamps();
         });
     }
