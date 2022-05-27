@@ -21,7 +21,7 @@ class AuthController extends Controller
 {
     public $sms_sevices;
     public function __construct(SMSServices $sms_sevices) {
-        $this->middleware('auth:api', ['except' => ['login', 'register','resendotp','resetpassword','Activeuser']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register','resendotp','resetpassword','Activeuser','delete_user']]);
         $this->sms_sevices=$sms_sevices;
 
     }
@@ -57,7 +57,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'phone' => 'required|string|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'photo'=>'required|image|mimes:jpg,png,jpeg,gif,svg',
+            // 'photo'=>'required|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
 
   //  return response()->json($request);
@@ -70,21 +70,21 @@ class AuthController extends Controller
             DB::beginTransaction(); 
             $verfication=[];
 
-            //for photo add
-            if($request->hasfile('photo')) 
-            {
-                $file=$request->file('photo');  
-                $ext=$file->getClientOriginalExtension(); 
-                $filename=time().'.'.$ext;
-                $file->move('assets/uploads/Profile/UserProfile',$filename);
-           }
+        //     //for photo add
+        //     if($request->hasfile('photo')) 
+        //     {
+        //         $file=$request->file('photo');  
+        //         $ext=$file->getClientOriginalExtension(); 
+        //         $filename=time().'.'.$ext;
+        //         $file->move('assets/uploads/Profile/UserProfile',$filename);
+        //    }
             //for photo add
             $user=User::create([
                     'name'=>$request->name,
                     'phone'=>$request->phone,
                     'password'=>bcrypt($request->password),
                     'verified_at'=>null,
-                    'photo'=>$filename,
+                    // 'photo'=>$filename,
                 ]);
                 $verfication['user_id']=$user->id;
                 $verfication_data=$this->sms_sevices->setVerficationCode($verfication);
@@ -252,5 +252,24 @@ class AuthController extends Controller
             }
      
 
+    }
+
+    public function delete_user($id)
+    {
+       // return response()->json($id);
+        $data=User::findorfail($id)->delete();
+        if($data)
+        {
+            return response()->json([
+                'message' => 'User successfully Deleted',
+                'user' => $data
+            ], 201);
+        }
+        else{
+            return response()->json([
+                'message' => ' Error in  DeletedUser',
+                'data' => $data
+            ], 405);
+        }
     }
 }

@@ -61,7 +61,9 @@ header start-->
                     </div>
                 </div>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#"><i class="text-info ti-settings"></i>Settings</a>
+                @if(auth('admin')->check())
+                <a class="dropdown-item" href="{{route('showprofile')}}"><i class="text-info ti-settings"></i>Settings</a>
+                @endif
                 @if(auth('web')->check())
                     <form method="GET" action="{{ route('logout','web') }}">
                         @else(auth('admin')->check())

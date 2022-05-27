@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AboutUsController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\AttributeTypeController;
 
@@ -131,7 +132,9 @@ Route::group(
 
     
     
-    
+    //adminprofile
+    Route::get('/showprofile',[AdminController::class,'index'])->name('showprofile');
+
     
     
     });

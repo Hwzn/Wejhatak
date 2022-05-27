@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
+use App\Http\Controllers\Api\Users\FaviourtTripagentController;
 use App\Http\Controllers\Api\Users\HelpRequestController;
 use App\Http\Controllers\Api\Users\UserDashboardController;
 
@@ -33,6 +34,7 @@ Route::group([
     Route::post('/resetpassword', [AuthController::class, 'resetpassword']);
     Route::get('/user-profile', [AuthController::class, 'userProfile']);  
     Route::post('Activeuser',[AuthController::class,'Activeuser']);
+    Route::post('delete_user/{id}',[AuthController::class,'delete_user']);
 
 
    
@@ -63,7 +65,11 @@ Route::group([
         //help_requests
         Route::post('/send_helprequest',[HelpRequestController::class,'send_helprequest']); 
         Route::get('/showhelp_requests/{lang}/{user_id}',[HelpRequestController::class,'showhelprequests']); 
-
+        
+        //Favourite_TripAgent
+        Route::get('/UserFavourite_TripAgent/{User_id}',[FaviourtTripagentController::class,'index']);
+        Route::get('/UserFavourite_ShowTripAgent/{id}',[FaviourtTripagentController::class,'showtripagent']);
+        Route::post('/AddFavourite_TripAgent',[FaviourtTripagentController::class,'store']);
         
     });
 

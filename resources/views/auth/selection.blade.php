@@ -45,11 +45,11 @@
                                     <img alt="user-img" width="100px;" src="{{URL::asset('assets/images/user_icon.png')}}">
                                 </a> -->
                                 <a class="btn btn-default col-lg-6" title="ادمن" href="{{route('login.show','admin')}}">
-                                    <img alt="user-img" width="100px;" src="{{URL::asset('assets/images/superadmin.png')}}">
+                                    <img alt="user-img" width="100px;" src="{{asset('assets/images/superadmin.png')}}">
                                 </a>
 
                                 <a class="btn btn-default col-lg-6" title="superadmin" href="">
-                                    <img alt="user-img" width="100px;" src="{{URL::asset('assets/images/admin.png')}}">
+                                    <img alt="user-img" width="100px;" src="{{asset('assets/images/admin.png')}}">
                                 </a>
                               
                             </div>

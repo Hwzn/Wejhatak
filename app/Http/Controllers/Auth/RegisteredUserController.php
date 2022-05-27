@@ -74,7 +74,7 @@ class RegisteredUserController extends Controller
 
     public function verifyuser(Request $request)
     {
-        dd($request);
+       // dd($request);
         $data=$request->validate([
             'otpcode' => 'required',
         ]);

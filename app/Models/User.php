@@ -39,5 +39,10 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims() {
         return [];
     }    
+
+    public function Tripagents()
+    {
+      return $this->belongsToMany('App\Models\Tripagent','faviourt_tripagents','User_id','TripAgent_id');
+    }
     
 }
