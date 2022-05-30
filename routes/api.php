@@ -8,7 +8,7 @@ use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
 use App\Http\Controllers\Api\Users\FaviourtTripagentController;
 use App\Http\Controllers\Api\Users\HelpRequestController;
-use App\Http\Controllers\Api\Users\UserDashboardController;
+use App\Http\Controllers\Api\Users\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +20,12 @@ use App\Http\Controllers\Api\Users\UserDashboardController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::group(['prefix'=>'user'],function(){
+    Route::get('userhomepage/{lang}',[UserController::class,'userhomepage']);    
+
+});
+
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'
@@ -36,31 +42,31 @@ Route::group([
     Route::post('Activeuser',[AuthController::class,'Activeuser']);
     Route::post('delete_user/{id}',[AuthController::class,'delete_user']);
 
-
+   
    
     
     Route::group(['middleware'=>'jwt.verified','prefix'=>'user'],function(){
 
         //UserDshboard
-        Route::post('/updateuser', [UserDashboardController::class, 'updateuser']);  
-        Route::post('/resetpassword', [UserDashboardController::class, 'resetpassword']);  
+        Route::post('/updateuser', [UserController::class, 'updateuser']);  
+        Route::post('/resetpassword', [UserController::class, 'resetpassword']);  
 
-        Route::get('getallservices/{lang}',[UserDashboardController::class,'getallservices']);    
+        // Route::get('getallservices/{lang}',[UserController::class,'getallservices']);    
      
-        Route::get('allTourism_tripgents',[UserDashboardController::class,'getallTourism_tripgents']);    
-        Route::get('gettop4Tourism_tripgents',[UserDashboardController::class,'GetTop4Tourism_tripgents']);    
+        Route::get('allTourism_tripgents',[UserController::class,'getallTourism_tripgents']);    
+        Route::get('gettop4Tourism_tripgents',[UserController::class,'GetTop4Tourism_tripgents']);    
       
-        Route::get('alleducationcompany_tripgents',[UserDashboardController::class,'alleducationcompany_tripgents']);    
-        Route::get('gettop4educationcompany_tripgents',[UserDashboardController::class,'gettop4educationcompany_tripgents']);    
-        Route::get('getTripgents_byServiceid/{id}',[UserDashboardController::class,'getTripgents_byServiceid']);    
-        Route::get('getservices_byTripagentid/{lang}/{id}',[UserDashboardController::class,'getservices_byTripagentid']);    
+        Route::get('alleducationcompany_tripgents',[UserController::class,'alleducationcompany_tripgents']);    
+        Route::get('gettop4educationcompany_tripgents',[UserController::class,'gettop4educationcompany_tripgents']);    
+        Route::get('getTripgents_byServiceid/{id}',[UserController::class,'getTripgents_byServiceid']);    
+        Route::get('getservices_byTripagentid/{lang}/{id}',[UserController::class,'getservices_byTripagentid']);    
 
-        Route::get('tourguides',[UserDashboardController::class,'showall_tourguides']); 
-        Route::get('showTop4_tourguides',[UserDashboardController::class,'showTop4_tourguides']); 
-        Route::get('showtourguide_byid/{id}',[UserDashboardController::class,'showtourguide_byid']); 
-        Route::get('search/{name}',[UserDashboardController::class,'allsearch']); 
+        Route::get('tourguides',[UserController::class,'showall_tourguides']); 
+        Route::get('showTop4_tourguides',[UserController::class,'showTop4_tourguides']); 
+        Route::get('showtourguide_byid/{id}',[UserController::class,'showtourguide_byid']); 
+        Route::get('search/{name}',[UserController::class,'allsearch']); 
 
-        Route::get('service_attributes/{id}',[UserDashboardController::class,'getservice_attributes']); 
+        Route::get('service_attributes/{id}',[UserController::class,'getservice_attributes']); 
 
         //help_requests
         Route::post('/send_helprequest',[HelpRequestController::class,'send_helprequest']); 

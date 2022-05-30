@@ -9,7 +9,8 @@ use App\Models\Serivce;
 use App\Models\Tripagent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Api\Trait\ApiResponseTrait;
+use App\Http\Controllers\Api\Traits\ApiResponseTrait;
+use App\Models\PlacesToVisit;
 use App\Models\Tourguide;
 use App\Models\TripagentsService;
 use Illuminate\Validation\Rules\Exists;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\User;
 use Illuminate\Validation\Rules;
 
-class UserDashboardController extends Controller
+class UserController extends Controller
 {
     use ApiResponseTrait;
     
@@ -113,14 +114,33 @@ public function resetpassword(Request $request)
 
 }
 //resetpassword
-    public function getallservices($lang)
+    public function userhomepage($lang)
     {
-      $services=Serivce::select('id',"name->$lang as 'service_name'")
-      //   ->where('name', config('app.locale'))
-        ->orderby('id','desc')->get();
-        if(!is_null($services))
+      $data['services']=Serivce::select('id',"name->$lang as 'service_name'")
+                        ->where('status','active')
+                        ->orderby('id','desc')->get();
+
+      $data['tripagents']=Tripagent::select('id',"name->$lang as 'Tripagent_Name'",'photo','starnumber')
+                          ->where('type','Tourism_Company')
+                          ->where('verified_at',"!=",'')
+        ->orderby('id','desc')->take(4)->get();
+
+        $data['placestovisit']=PlacesToVisit::select('id',"name->$lang as 'PlaceVisit_Name'",'photo','desc')
+                          ->where('status','active')
+                          ->orderby('id','desc')->take(4)->get();
+
+        $data['tourguides']=Tourguide::select('id',"name->$lang as 'Tourguide_Name'",'photo','starnumber')
+                          ->where('verified_at',"!=",'')
+                          ->orderby('id','desc')->take(4)->get();
+
+        $data['educational_service']=Tripagent::select('id',"name->$lang as 'Tripagent_Name'",'photo','starnumber')
+                           ->where('type','educational_service')
+                           ->where('verified_at',"!=",'')
+                           ->orderby('id','desc')->take(4)->get();
+    
+        if(!is_null($data))
         {
-           return $this->apiResponse($services,'ok',200);
+           return $this->apiResponse($data,'ok',200);
         }
         else{
            return $this->apiResponse("",'not data found',404);

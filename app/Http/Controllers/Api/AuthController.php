@@ -62,7 +62,9 @@ class AuthController extends Controller
 
   //  return response()->json($request);
         if($data->fails()){
-            return response()->json($data->errors()->toJson(), 400);
+           // return response()->json($data->errors()->toJson(), 400);
+           return response()->json($data->errors(), 400);
+
         }
 
      try 

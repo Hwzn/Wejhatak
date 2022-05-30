@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Api\Trait;
+namespace App\Http\Controllers\Api\Traits;
 
 trait  ApiResponseTrait
 {

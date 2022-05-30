@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSerivcesTable extends Migration
+class CreateTourGuidesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,17 @@ class CreateSerivcesTable extends Migration
      */
     public function up()
     {
-        Schema::create('serivces', function (Blueprint $table) {
+        Schema::create('tour_guides', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->enum('type',['basic','additional'])->nullable('basic');
+            $table->string('phone')->unique();
+            $table->timestamp('verified_at')->nullable();
+            $table->string('password');
+            $table->string('address')->nullable();
+            $table->integer('starnumber')->nullable();
+            $table->integer('evaulation')->nullable();
+            $table->string('photo')->nullable();
             $table->text('desc')->nullable();
-            $table->enum('status',['active','not_active'])->default('active');
-            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -31,6 +35,6 @@ class CreateSerivcesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('serivces');
+        Schema::dropIfExists('tour_guides');
     }
 }
