@@ -19,6 +19,8 @@ return [
     'Aboutus'=>'من نحن',
     'ShowCommonQuestions'=>'الاسئلة الشائعة',
     'Helps'=>'المساعدة',
-
+    'TermsAndConditions'=>'الشروط والأحكام',
+     'UsagePolicy'=>'سياسة الإستخدام',
+     'AdsSlideShow'=>'شاشة عرض الاعلانات',
 
 ];

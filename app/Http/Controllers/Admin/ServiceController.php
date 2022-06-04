@@ -10,6 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ServiceController extends Controller
 {
@@ -27,19 +28,29 @@ class ServiceController extends Controller
              'service_ar'=>'required|unique:serivces,name->ar',
              'service_en'=>'required|unique:serivces,name->en',
              'service_ar.required'=>trans('validation.required'),
-             'service_en.required'=>trans('validation.required')         
+             'service_en.required'=>trans('validation.required'),
+             'file'=>'image|mimes:jpg,png,jpeg,gif,svg',
+     
         ]);
-
+        $image=Null;
         if ($validator->fails())
         {
         return response()->json(['error'=>$validator->errors()->all()]);
 
         }
-
         else {
+          if($request->hasfile('file')) 
+          {
+              $file=$request->file('file');  
+              $ext=$file->getClientOriginalExtension(); 
+              $filename=time().'.'.$ext;
+              $file->move('assets/uploads/Services/',$filename);
+              $image=$filename;
+          }
             $service=Serivce::create([
               'name' => ['en' => $request->service_en, 'ar' => $request->service_ar],
               'desc'=>$request->desc,
+              'photo'=>$image,
             ]);
             if(!is_null($service)) {
               toastr()->success(trans('messages_trans.success'));
@@ -52,7 +63,15 @@ class ServiceController extends Controller
 
     public function edit($id)
     {
-      $service=Serivce::findorfail($id);
+      $service=Serivce::where('id',$id)->first();
+      // return response()->json(gettype($service));
+
+      // $url='/assets/uploads/Services/';
+      // $array['id']=$service->id;
+      
+      // $array['oldimage']=$service->photo;
+      // $array['imageurl']=$url.$service->photo;
+      // $array['desc']=$service->desc;
       if($service)
       {
         return response()->json($service);
@@ -62,11 +81,12 @@ class ServiceController extends Controller
 
     public function update(Request $request)
     {
-      // return response($request);
       $validator=Validator::make($request->all(),[
         // 'service_ar'=>'required|unique:serivces,name,'.$request->service_id,
         'service_ar'=>'required|unique:serivces,name->ar,'.$request->service_id,
         'service_en'=>'required|unique:serivces,name->en,'.$request->service_id,
+        'file1'=>'image|mimes:jpg,png,jpeg,gif,svg',
+
         'service_ar.required'=>trans('validation.required'),
         'service_en.required'=>trans('validation.required')  
     ]);
@@ -76,9 +96,30 @@ class ServiceController extends Controller
     }
     
     else{
+
+      ///
+      $image=$request->oldimage;
+      if($request->hasfile('file1')) 
+      {
+          //هشيل الصورة الديمة
+           $path='assets/uploads/Services/'.$request->oldimage;
+           if(File::exists($path))
+           {
+               File::delete($path);
+           }  
+         
+           $file=$request->file('file1');
+           $ext=$file->getClientOriginalExtension();
+           $filename=time().'.'.$ext;
+           $file->move('assets/uploads/Services',$filename);
+           $image=$filename;
+      }
+  
+      ///
       $services=Serivce::where('id',$request->service_id)->update([
         'name' => ['en' => $request->service_en,'ar' => $request->service_ar],
         'desc'=>$request->desc,
+        'photo'=>$image,
       ]);
 
     //   $Grades->update([
@@ -96,7 +137,13 @@ class ServiceController extends Controller
 
     public function destroy($id)
     {
-        $service=Serivce::where('id',$id)->delete();
+        $service=Serivce::where('id',$id)->first();
+        $path='assets/uploads/Services/'.$service->photo;
+        if(File::exists($path))
+        {
+            File::delete($path);
+        }  
+        $service->delete($id);
         if(!is_null($service))
       {
         toastr()->error(trans('Service_trans.Message_Delete'));

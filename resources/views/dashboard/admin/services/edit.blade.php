@@ -49,6 +49,13 @@
                                                                                 <textarea class="form-control" name="desc" id="exampleFormControlTextarea1"
                                                                                         rows="3"></textarea>
                                                                             </div>
+                                                                            <div class="form-group">
+                                                                                <label
+                                                                                    for="exampleFormControlTextarea1">{{ trans('Service_trans.Service_desc') }}
+                                                                                    :</label>
+                                                                                    <input type="hidden"   name="oldimage" />
+                                                                                    <input type="file"  accept="image/*" name="service_fileuplo" id="file2" onchange="loadFile1(event)"/>
+                                                                                    <img style="width: 50px;height:50px" id="img_service" />                                                                            </div>
                                                                             <br><br>
                                                                     </div>
                                                                     <div class="modal-footer">

@@ -98,43 +98,49 @@
 
 @endsection
 @section('js')
+
 <script>
-   $("#addservice_Modola  button,#editModolad_service  button").click(function(e)
+        var loadFile = function(event) {
+            var output = document.getElementById('imgservice');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = function() {
+                URL.revokeObjectURL(output.src) // free memory
+            }
+        };
+    </script>
+
+<script>
+        var loadFile1 = function(event) {
+            var output = document.getElementById('img_service');
+            output.src = URL.createObjectURL(event.target.files[0]);
+            output.onload = function() {
+                URL.revokeObjectURL(output.src) // free memory
+            }
+        };
+    </script>
+<script>
+$("#addservice_Modola  button").click(function(e)
    {
     e.preventDefault();
-     if($(this).attr('type')==='add')
-       {
+       var fd = new FormData();
+        var files = $('#file')[0].files;
          url=$("#addservice_Modola form").attr('action');
-        
-         data={
-           service_ar:$("#addservice_Modola form input[name='Name']").val(),
-           service_en:$("#addservice_Modola form input[name='Name_en']").val(),
-           desc:$("#addservice_Modola form textarea[name='Notes']").val()
-          };
-          
+        if(files.length > 0 )
+        {
+            fd.append('file',files[0]);
         }
-        if($(this).attr('type')==='edit')
-       {
-       
-         url=$("#editModolad_service form").attr('action');
-         data={
-           service_ar:$("#editModolad_service form input[name='Name']").val(),
-           service_en:$("#editModolad_service form input[name='Name_en']").val(),
-           desc:$("#editModolad_service form textarea[name='desc']").val(),
-           service_id:$("#editModolad_service form input[name='service_id']").val()
-        
-          };
-         
-        //  console.log(url);
-        //  return;
-        }
-         $.ajax({
-           url:url,
-           data:data,
-           type:'POST',
-           headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-           
-           success:function(data)
+        fd.append('service_ar',$("#addservice_Modola form input[name='Name']").val());
+        fd.append('service_en',$("#addservice_Modola form input[name='Name_en']").val());
+        fd.append('desc',$("#addservice_Modola form textarea[name='Notes']").val());
+
+        $.ajax({
+               headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+               url: url,
+               type: 'post',
+               data:fd,  
+               contentType: false,
+               processData: false,
+               success:function(data)
             {
                 if(data.hasOwnProperty('success')){
                     location.reload(true);
@@ -143,7 +149,61 @@
                    printErrorMsg(data.error);
                }
             }
-         });
+            });
+         
+        
+       
+        
+     
+   
+   });
+   $("#editModolad_service  button").click(function(e)
+   {
+
+    if($(this).attr('type')==='edit')
+      {
+         
+        var fd1 = new FormData();
+        var files = $('#editModolad_service form #file2')[0].files;
+        // var status=$("#editModolad_service form input[name='status']").prop('checked')?1:0;
+        var service_ar=$("#editModolad_service form input[name='Name']").val();
+        var service_en=$("#editModolad_service form input[name='Name_en']").val();
+
+        var desc=$("#editModolad_service form textarea[name='desc']").val();
+        var service_id=$("#editModolad_service form input[name='service_id']").val();
+        var oldimage=$("#editModolad_service form input[name='oldimage']").val();
+
+        fd1.append('service_id',service_id);
+        fd1.append('service_ar',service_ar);
+        fd1.append('service_en',service_en);
+        fd1.append('desc',desc);
+        fd1.append('oldimage',oldimage);
+
+        if(files.length > 0 )
+        {
+            
+            fd1.append('file',files[0]);
+        }
+            $.ajax({
+               headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+               url: '{{route("updateservice")}}',
+               type: 'post',
+               data:fd1,  
+               contentType: false,
+               processData: false,
+               success: function(data){
+                if(data.hasOwnProperty('success')){
+                    location.reload(true);
+               }else{
+                   
+                   printErrorMsg(data.error);
+               }
+               },
+            });
+      
+
+
+      }
      
    
    });
@@ -161,13 +221,14 @@
             url:getHref,
         }).done(function(data)
             {
-               
+               console.log(data);
+            //    return;
                 $("#editModolad_service form input[name='Name']").val(data.name['ar']);
                 $("#editModolad_service form input[name='Name_en']").val(data.name['en']);
                 $("#editModolad_service form textarea[name='desc']").val(data.desc);
                 $("#editModolad_service form input[name='service_id']").val(data.id);
-
-                
+                $("#editModolad_service form input[name='oldimage']").val(data.photo);
+ 
             });
     });
 
@@ -186,6 +247,8 @@
                         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                        type:"post"
                        }).done(function(data) {
+                        //    console.log(data);
+                        //    return;
                         location.reload(true);
                    });
  });      

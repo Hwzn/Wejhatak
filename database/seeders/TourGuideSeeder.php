@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Tourguide;
+use App\Models\TourGuide;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class TourGuideSeeder extends Seeder
@@ -28,7 +28,7 @@ class TourGuideSeeder extends Seeder
   foreach($data as $data)
   {
 
-    Tourguide::create([
+    TourGuide::create([
         'name'=>$data,
         'phone'=>mt_rand(10000000,99999999),
         'password'=>bcrypt('11111111'),

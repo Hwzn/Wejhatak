@@ -18,6 +18,6 @@ return [
     'Aboutus'=>'Aboutus',
     'ShowCommonQuestions'=>'CommonQuestions',
     'Helps'=>'Helps',
-
-
+    'TermsAndConditions'=>'TermsAndConditions',
+    'UsagePolicy'=>'UsagePolicy',
 ];

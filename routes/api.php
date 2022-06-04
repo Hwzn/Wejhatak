@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
+use App\Http\Controllers\Api\TermsCondtionsController;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
 use App\Http\Controllers\Api\Users\FaviourtTripagentController;
 use App\Http\Controllers\Api\Users\HelpRequestController;
@@ -21,9 +22,33 @@ use App\Http\Controllers\Api\Users\UserController;
 |
 */
 
-Route::group(['prefix'=>'user'],function(){
+//Routes For Non User
+Route::group(['prefix'=>'user','middleware'=>'api'],function(){
     Route::get('userhomepage/{lang}',[UserController::class,'userhomepage']);    
+    Route::get('allTourism_tripgents/{lang}',[UserController::class,'getallTourism_tripgents']);    
+    Route::get('alleducationcompany_tripgents/{lang}',[UserController::class,'alleducationcompany_tripgents']);    
+    Route::get('get_tripagentbyid/{lang}/{id}',[UserController::class,'get_tripagentbyid']);    
 
+    
+    Route::get('tourguides/{lang}',[UserController::class,'showall_tourguides']); 
+    Route::get('show_placesTovisits/{lang}',[UserController::class,'show_placesTovisits']); 
+    Route::get('viewplacevisit_details/{lang}/{id}',[UserController::class,'viewplacevisit_details']); 
+
+    Route::get('getTripgents_byServiceid/{lang}/{id}',[UserController::class,'getTripgents_byServiceid']);    
+    Route::get('getservices_byTripagentid/{lang}/{id}',[UserController::class,'getservices_byTripagentid']);    
+    Route::get('showtourguide_byid/{lang}/{id}',[UserController::class,'showtourguide_byid']); 
+
+
+    
+    Route::post('/send_contactrequest', [ContactUscontroller::class, 'store']);
+    Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
+    Route::get('/commonquestion/{lang}', [CommonQuestions::class, 'index']);
+    Route::get('/showtermscondition/{lang}', [UserController::class, 'showtermscondition']);
+    Route::get('/showusageploicy/{lang}', [UserController::class, 'showusageploicy']);
+    
+    Route::get('/showads_slideshow', [UserController::class, 'showads_slideshow']);
+
+    
 });
 
 Route::group([
@@ -53,17 +78,17 @@ Route::group([
 
         // Route::get('getallservices/{lang}',[UserController::class,'getallservices']);    
      
-        Route::get('allTourism_tripgents',[UserController::class,'getallTourism_tripgents']);    
-        Route::get('gettop4Tourism_tripgents',[UserController::class,'GetTop4Tourism_tripgents']);    
-      
-        Route::get('alleducationcompany_tripgents',[UserController::class,'alleducationcompany_tripgents']);    
-        Route::get('gettop4educationcompany_tripgents',[UserController::class,'gettop4educationcompany_tripgents']);    
-        Route::get('getTripgents_byServiceid/{id}',[UserController::class,'getTripgents_byServiceid']);    
+        /*
+        Route::get('allTourism_tripgents/{lang}',[UserController::class,'getallTourism_tripgents']);    
+        Route::get('alleducationcompany_tripgents/{lang}',[UserController::class,'alleducationcompany_tripgents']);    
+        Route::get('tourguides/{lang}',[UserController::class,'showall_tourguides']); 
+
+        Route::get('getTripgents_byServiceid/{lang}/{id}',[UserController::class,'getTripgents_byServiceid']);    
         Route::get('getservices_byTripagentid/{lang}/{id}',[UserController::class,'getservices_byTripagentid']);    
 
-        Route::get('tourguides',[UserController::class,'showall_tourguides']); 
-        Route::get('showTop4_tourguides',[UserController::class,'showTop4_tourguides']); 
-        Route::get('showtourguide_byid/{id}',[UserController::class,'showtourguide_byid']); 
+        Route::get('showtourguide_byid/{lang}/{id}',[UserController::class,'showtourguide_byid']); 
+        Route::get('showPlacesTovisits/{lang}',[UserController::class,'showPlacesTovisits']); 
+       */
         Route::get('search/{name}',[UserController::class,'allsearch']); 
 
         Route::get('service_attributes/{id}',[UserController::class,'getservice_attributes']); 
@@ -79,18 +104,12 @@ Route::group([
         
     });
 
+    Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
+    Route::get('/commonquestion/{lang}', [CommonQuestions::class, 'index']);
 });
 
 
-//Contactus
-    Route::post('/send_contactrequest', [ContactUscontroller::class, 'store']);
-//aboutus
-Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
-
-//CommonQuestion
-Route::get('/commonquestion/{lang}', [CommonQuestions::class, 'index']);
-
-
+  
 
 
 

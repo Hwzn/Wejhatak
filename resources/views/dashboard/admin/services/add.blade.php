@@ -46,6 +46,14 @@
                                           rows="3"></textarea>
                             </div>
                             <br><br>
+                            <hr>
+                            <div class="form-group">
+                                <label
+                                    for="exampleFormControlTextarea1">{{ trans('Service_trans.Service_desc') }}
+                                    :</label>
+                                <input type="file"  accept="image/*" name="service_file" id="file" onchange="loadFile(event)"/>
+                                <img style="width: 50px;height:50px" id="imgservice" />
+                            </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"

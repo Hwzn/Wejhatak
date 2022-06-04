@@ -69,6 +69,8 @@ class Kernel extends HttpKernel
         'localeCookieRedirect'    => \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
         'localeViewPath'          => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
         'verifyusercode' => \App\Http\Middleware\VerifyCode::class,
-        'jwt.verified' => \App\Http\Middleware\JwtMiddleware::class
+        'jwt.verified' => \App\Http\Middleware\JwtMiddleware::class,
+        'Customjwt.verified' => \App\Http\Middleware\CustomJwtMiddleware::class,
+        
     ];
 }

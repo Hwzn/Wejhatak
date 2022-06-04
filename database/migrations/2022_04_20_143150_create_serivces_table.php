@@ -19,6 +19,7 @@ class CreateSerivcesTable extends Migration
             $table->enum('type',['basic','additional'])->nullable('basic');
             $table->text('desc')->nullable();
             $table->enum('status',['active','not_active'])->default('active');
+            $table->string('photo')->nullabel();
             $table->softDeletes();
             $table->timestamps();
         });

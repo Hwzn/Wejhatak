@@ -8,9 +8,12 @@ use App\Http\Controllers\Admin\AttributeTypeController;
 
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AdsController;
+use App\Http\Controllers\Admin\AdsSlideShowController;
 use App\Http\Controllers\Admin\CommonQuestions;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\HelpController;
+use App\Http\Controllers\Admin\TermConditionController;
+use App\Http\Controllers\Admin\UsagePolicyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -135,6 +138,23 @@ Route::group(
     //adminprofile
     Route::get('/showprofile',[AdminController::class,'index'])->name('showprofile');
 
+    
+    //TermsAndConditions
+    Route::get('/terms_conditions',[TermConditionController::class,'index'])->name('terms_conditions');
+    Route::post('/add_termsconditions',[TermConditionController::class,'store'])->name('add_termsconditions');
+    
+
+    //add_UsagePolicy
+    Route::get('/usagepolicy',[UsagePolicyController::class,'index'])->name('usagepolicy');
+    Route::post('/add_UsagePolicy',[UsagePolicyController::class,'store'])->name('add_UsagePolicy');
+    
+    //Ads_SlideShow
+
+    Route::get('/Ads_SlideShow',[AdsSlideShowController::class,'index'])->name('Ads_SlideShow');
+    Route::post('/add_ads',[AdsSlideShowController::class,'store'])->name('add_ads');
+    Route::post('/delete_AdsSlideShow/{id}',[AdsSlideShowController::class,'delete'])->name('delete_AdsSlideShow');
+    Route::get('/edit_adsslide/{id}',[AdsSlideShowController::class,'edit'])->name('edit_adsslide'); 
+    Route::post('/update_ads',[AdsSlideShowController::class,'update'])->name('update_ads');
     
     
     });

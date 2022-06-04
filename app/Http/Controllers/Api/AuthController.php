@@ -53,20 +53,23 @@ class AuthController extends Controller
 
     public function register(Request $request) {
 
+        
+        
         $data = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|unique:users',
+            'phone' => 'required|string',
+            // 'phone' => 'required|string|unique:users',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             // 'photo'=>'required|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
 
-  //  return response()->json($request);
-        if($data->fails()){
-           // return response()->json($data->errors()->toJson(), 400);
-           return response()->json($data->errors(), 400);
-
+        //for if user not write otp for any reson and want to repeat register
+        if(User::where('phone',$request->phone)->exists())
+        {
+           $user=User::where('phone',$request->phone)->first();
+           User_verfication::where('user_id',$user->id)->delete();
+           User::where('id',$user->id)->delete();
         }
-
      try 
         {
             DB::beginTransaction(); 

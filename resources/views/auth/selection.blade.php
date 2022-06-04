@@ -41,16 +41,12 @@
                             <hr>
                             <div class="form-inline">
                                 
-                                <!-- <a class="btn btn-default col-lg-4" title="superadmin" href="{{route('login.show','user')}}">
-                                    <img alt="user-img" width="100px;" src="{{URL::asset('assets/images/user_icon.png')}}">
-                                </a> -->
-                                <a class="btn btn-default col-lg-6" title="ادمن" href="{{route('login.show','admin')}}">
-                                    <img alt="user-img" width="100px;" src="{{asset('assets/images/superadmin.png')}}">
-                                </a>
-
-                                <a class="btn btn-default col-lg-6" title="superadmin" href="">
+                              
+                                <a class="btn btn-default col-lg-12" title="ادمن" href="{{route('login.show','admin')}}">
                                     <img alt="user-img" width="100px;" src="{{asset('assets/images/admin.png')}}">
                                 </a>
+
+                               
                               
                             </div>
 
