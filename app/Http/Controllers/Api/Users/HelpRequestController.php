@@ -12,6 +12,25 @@ use Illuminate\Support\Facades\Auth;
 
 class HelpRequestController extends Controller
 {
+   public function FormHelpRequest($lang)
+   {
+       $FormHelp=Help::select('id',"name->$lang as Problem_Type")->orderby('id','desc')->get();
+       if($FormHelp->count()>0)
+       {
+           return response()->json([
+               'MSG'=>'ok',
+               'data'=>$FormHelp,
+           ],200);
+       }
+       else
+       {
+        return response()->json([
+            'MSG'=>'No Data Found',
+            'data'=>'',
+        ],404);
+       }
+       
+   }
     public function send_helprequest(Request $request)
     {
         // $user=Auth::user();
@@ -35,7 +54,7 @@ class HelpRequestController extends Controller
                   $file=$request->file('photo');
                   $ext=$file->getClientOriginalExtension();
                   $filename=$rand_num.'.'.$ext;
-                  $file->move('assets/uploads/UserHelpRequests',$filename);
+                  $file->move('public/assets/uploads/UserHelpRequests',$filename);
                   $helpimage=$filename;
              }
          
@@ -77,26 +96,66 @@ class HelpRequestController extends Controller
 
         // $data=HelpRequest::where('user_id',$user_id)->orderby('id','desc')
         //   ->get();
-        $data=HelpRequest::select('help_requests.*',"helps.name->$lang as 'help_name'")
+        if(HelpRequest::where('help_requests.user_id',$user_id)->exists())
+        {
+             $data['helprequests']=HelpRequest::select('help_requests.*',"helps.name->$lang as 'help_name'")
         ->where('help_requests.user_id',$user_id)
         ->join('helps','help_requests.help_id', '=', 'helps.id')
         ->paginate(10);
 
-      //  $profile=Client::select('clients.*','client_types.name as type_name','client_types.id')->where('clients.id',$id)->join('client_types','client_types.id','=','clients.client_type_id')->first();
-
-        if($data)
+        $helprequest=array();
+        $HostName=request()->getHttpHost();
+        if($data['helprequests']->count()>0)
         {
-            return response()->json([
+           foreach($data['helprequests'] as $data)
+           {
+              $array['id']=$data->id;
+              $array['ticket_num']=$data->ticket_num;
+              $array['user_id']=$data->user_id;
+              $array['help_id']=$data->help_id;
+              $array['request_details']=$data->request_details;
+              $array['status']=$data->status;
+             $array['created_at']=$data->created_at;
+            $array['updated_at']=$data->updated_at;
+
+              $array['photo']="$HostName/public/assets/uploads/UserHelpRequests/".$data->request_photo;
+              array_push($helprequest,$array);
+           }
+       
+         
+             return response()->json([
                 'message' => 'ok',
-                'data' => $data
+                'data' => $helprequest
             ], 201);
         }
-        else{
-            return response()->json([
-                'message' => 'Error in return data',
+        
+        else
+        {
+             return response()->json([
+                'message' => 'No Data Found',
                 'data' => ''
-            ], 405);
+            ], 404);
         }
-    }
+       
+      //  $profile=Client::select('clients.*','client_types.name as type_name','client_types.id')->where('clients.id',$id)->join('client_types','client_types.id','=','clients.client_type_id')->first();
 
+        // if($data)
+        // {
+        //     return response()->json([
+        //         'message' => 'ok',
+        //         'data' => $data
+        //     ], 201);
+        
+       
+    }
+    else
+    {
+        return response()->json([
+                'message' => 'user not Found',
+                'data' => ''
+            ], 404);
+    }
+    
+
+}
 }

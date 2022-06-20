@@ -15,34 +15,66 @@ class FaviourtTripagentController extends Controller
 {
     use ApiResponseTrait;
 
-    public function index($User_id)
+    public function index($lang,$User_id)
     {
       if(FaviourtTripAgent::where('User_id',$User_id)->exists())
       {
-        $data=User::select('users.id','users.name')->with('Tripagents')
-             ->find($User_id);
-         return $this->apiResponse($data,'ok',200);
+        // $data=User::select('id',"name")->with('Tripagents')
+        //      ->find($User_id);
+       $data=User::select('id',"name as username")
+             ->with(['Tripagents'=>function($query) use($lang){
+              $query->select('trip_agents.id',"name->$lang as Tripagent_Name",'phone','type','photo',"desc->$lang as desc")
+                 ->where('trip_agents.verified_at',"!=",Null);
+        }])->find($User_id);
+
+        $HostName=request()->getHttpHost();
+        $tripagent=array();
+       foreach($data->Tripagents as $tripagents)
+       {
+           $array['user_id']=$data->id;
+            $array['user_name']=$data->username;
+            $array['Tripagent_id']=$tripagents->id;
+            $array['name']=$tripagents->Tripagent_Name;
+            $array['phone']=$tripagents->phone;
+            $array['type']=$tripagents->type;
+            $array['desc']=$tripagents->desc;
+            $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$tripagents->photo;
+            array_push($tripagent,$array);
+    }
+         return $this->apiResponse($tripagent,'ok',200);
       }
       else
       {
-        return $this->apiResponse('','User Not Found',404);
+        return $this->apiResponse('','Data Not Found',404);
 
       }
        
     }
 
-    public function showtripagent($TripAgent_id)
+    public function showtripagent($lang,$TripAgent_id)
     {
 
         if(Tripagent::where('id',$TripAgent_id)->exists())
       {
-        $data=Tripagent::where('id',$TripAgent_id)->first();
+        // $data=Tripagent::where('id',$TripAgent_id)->first();
             
-         return $this->apiResponse($data,'ok',200);
+        $data=Tripagent::select('trip_agents.id',"name->$lang as Tripagent_Name",'phone','type','photo',"desc->$lang as desc")
+                        ->where('id',$TripAgent_id)
+                        ->first();
+       $HostName=request()->getHttpHost();
+       $tripagent['Tripagent_id']=$data->id;
+       $tripagent['name']=$data->Tripagent_Name;
+       $tripagent['phone']=$data->phone;
+       $tripagent['type']=$data->type;
+       $tripagent['desc']=$data->desc;
+       $tripagent['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
+
+
+         return $this->apiResponse($tripagent,'ok',200);
       }
       else
       {
-        return $this->apiResponse('','User Not Found',404);
+        return $this->apiResponse('','Data Not Found',404);
 
       }
        

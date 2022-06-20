@@ -8,10 +8,11 @@ use Illuminate\Http\Request;
 use App\Models\Serivce;
 use App\Models\Tripagent;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Api\Traits\ApiResponseTrait;
 use App\Models\AdsSlideShow;
+use App\Models\Booking;
 use App\Models\PlacesToVisit;
+use App\Models\ServiceAttruibute;
 use App\Models\TermsandCondition;
 use App\Models\TourGuide;
 use App\Models\TripagentsService;
@@ -21,20 +22,22 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Support\Facades\File;
 use App\Models\User;
+use App\Models\Attribute;
+use App\Models\CarType;
 use Illuminate\Validation\Rules;
-
+use Illuminate\Support\Facades\Auth;
 class UserController extends Controller
 {
     use ApiResponseTrait;
     
 public function updateuser(Request $request)
 {
-    $user=Auth::user();
 
     $data = Validator::make($request->all(), [
+         'user_id'=>'required|exists:users,id',
          'name' => 'required|string|max:255|',
-         'phone' => 'required|string|unique:users,phone,'.$user->id,
-          'password' => ['required', 'confirmed', Rules\Password::defaults()],
+         'phone' => 'required|string|unique:users,phone,'.$request->user_id,
+         //  'password' => ['required', 'confirmed', Rules\Password::defaults()],
           'photo'=>'image|mimes:jpg,png,jpeg,gif,svg',
     ]);
     if($data->fails()){
@@ -42,13 +45,15 @@ public function updateuser(Request $request)
     }
     try{
        DB::beginTransaction();
-        $image=$user->photo;
-
+       // $image=$user->photo;
+     $currentuser=User::findorfail($request->user_id);
+     $image=$currentuser->photo;
+     
         if($request->hasfile('photo')) 
         {
             //هشيل الصورة الديمة
-             $path='assets/uploads/Profile/UserProfile/'.$image;
-             if(File::exists($path))
+            $path='public/assets/uploads/Profile/UserProfile/'.$image;
+            if(File::exists($path))
              {
                  File::delete($path);
              }  
@@ -56,15 +61,15 @@ public function updateuser(Request $request)
              $file=$request->file('photo');
              $ext=$file->getClientOriginalExtension();
              $filename=time().'.'.$ext;
-             $file->move('assets/uploads/Profile/UserProfile',$filename);
+             $file->move('public/assets/uploads/Profile/UserProfile',$filename);
              $image=$filename;
         }
     
-        $user=User::findorfail($user->id)->update([
+        $user=User::findorfail($request->user_id)->update([
             'name'=>$request->name,
             'phone'=>$request->phone,
-            'password'=>bcrypt($request->password),
-            'verified_at'=>$user->verified_at,
+            // 'password'=>bcrypt($request->password),
+            'verified_at'=>$currentuser->verified_at,
             'photo'=>$image,
         ]);
 
@@ -80,7 +85,7 @@ public function updateuser(Request $request)
         DB::rollBack();
         return response()->json([
             'message' => $ex,
-            'user' => 'd'
+            'user' => 'Error in update'
         ], 404);
     }
 
@@ -91,15 +96,16 @@ public function updateuser(Request $request)
 public function resetpassword(Request $request)
 {
     $data = Validator::make($request->all(), [
-         'current_password' => 'required',
+      'user_id'=>'required|exists:users,id',
+      'current_password' => 'required',
          'new_password'=> ['required','string','min:3','max:10'],
          'password_confirm'=>'required|same:new_password|string|min:3|max:10',
 
    ]);
    if($data->fails()){
-       return response()->json($data->errors()->toJson(), 400);
+       return response()->json($data->errors(), 400);
    }
-    $current_user=Auth::user();
+    $current_user=User::findorfail($request->user_id);
     $currentpassword=$request->current_password;
     if(password_verify($currentpassword,$current_user->password))
     {
@@ -119,32 +125,53 @@ public function resetpassword(Request $request)
 //resetpassword
     public function userhomepage($lang)
     {
+
+      
       $urlhost=request()->getHttpHost();
+     //ads
+     $AdsSlideShows=AdsSlideShow::where('status','enabled')
+     ->orderby('id','desc')
+     ->take(4)
+         ->get();
+      $data['$AdsSlide']=array();
+      foreach($AdsSlideShows as $AdsSlideShow)
+      {
+      $array_s['id']=$AdsSlideShow->id;
+      $array_s['photo']="$urlhost/assets/uploads/AdsSlideShow/".$AdsSlideShow->photo;
+      $array_s['status']=$AdsSlideShow->status;
+      array_push($data['$AdsSlide'],$array_s);
+      }
+
+     //ads
       $services=Serivce::select('id',"name->$lang as service_name",'photo')
                         ->where('status','active')
-                        ->orderby('id','desc')->get();
+                        ->orderby('id','asc')->get();
       $data['services']=array();
                         foreach($services as $service)
                         {
-                           $array['id']=$service->id;
-                           $array['service_name']=$service->service_name;
-                           $array['photo']="$urlhost/assets/uploads/Services/".$service->photo;
-                           array_push($data['services'],$array);
+                           $array_se['id']=$service->id;
+                           $array_se['service_name']=$service->service_name;
+                           $array_se['photo']="$urlhost/assets/uploads/Services/".$service->photo;
+                           array_push($data['services'],$array_se);
                         }
      //tripagents
-       $tripagents=Tripagent::select('id',"name->$lang as Tripagent_Name",'photo','starnumber')
+       $tripagents=Tripagent::select('id',"name->$lang as Tripagent_Name",'photo','starnumber','profile_photo')
                           ->where('type','Tourism_Company')
                           ->where('verified_at',"!=",Null)
         ->orderby('id','desc')->take(4)->get();
-        
+    
+  
         $data['tripagents']=array();
         foreach($tripagents as $tripagent)
         {
            $array['id']=$tripagent->id;
            $array['Tripagent_Name']=$tripagent->Tripagent_Name;
            $array['starnumber']=$tripagent->starnumber;
-           $array['photo']="$urlhost/assets/uploads/Profile/TripAgent/".$tripagent->photo;;
-           array_push($data['tripagents'],$array);
+          $array['Service_id']=TripagentsService::where('tripagent_id',$tripagent->id)->pluck('service_id')->first();
+          $array['photo']="$urlhost/assets/uploads/Profile/TripAgent/".$tripagent->photo;;
+          $array['profile_photo']="$urlhost/assets/uploads/Profile/TripAgent/profile/".$tripagent->profile_photo;;
+
+          array_push($data['tripagents'],$array);
         }
        // tripagents
         
@@ -173,14 +200,14 @@ public function resetpassword(Request $request)
                              $array3['id']=$tourguide->id;
                              $array3['Tourguide_Name']=$tourguide->Tourguide_Name;
                              $array3['starnumber']=$tourguide->starnumber;
-                             $array3['photo']="$urlhost/assets/uploads/Profile/TourGuide/".$tourguide->photo;
+                             $array3['photo']="$urlhost/assets/uploads/Profile/TourGuide/Tripbackground/".$tourguide->photo;
                              array_push($data['tourguides'],$array3);
                            }
      //tourguide
 
      //educational service
 
-        $educational_services=Tripagent::select('id',"name->$lang as Tripagent_Name",'photo','starnumber')
+        $educational_services=Tripagent::select('id',"name->$lang as Tripagent_Name",'photo','starnumber','profile_photo')
                            ->where('type','educational_service')
                            ->where('verified_at',"!=",Null)
                            ->orderby('id','desc')->take(4)->get();
@@ -191,6 +218,8 @@ public function resetpassword(Request $request)
            $array['Tripagent_Name']=$educational_service->Tripagent_Name;
            $array['starnumber']=$educational_service->starnumber;
            $array['photo']="$urlhost/assets/uploads/Profile/TripAgent/".$educational_service->photo;;
+           $array['profile_photo']="$urlhost/assets/uploads/Profile/TripAgent/profile/".$educational_service->profile_photo;;
+
            array_push($data['educational_service'],$array);
         }
      //educational service
@@ -209,7 +238,7 @@ public function resetpassword(Request $request)
     public function getallTourism_tripgents($lang)
     {
       
-         $data['Tripagents']=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo','desc')
+         $data['Tripagents']=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo',"desc->$lang as desc",'starnumber','profile_photo')
          ->where('type','Tourism_Company')
          ->where('verified_at','!=',Null)
         ->orderby('id','desc')->paginate(10);
@@ -224,7 +253,9 @@ public function resetpassword(Request $request)
               $array['Tripagent']=$data->Tripagent;
               $array['phone']=$data->phone;
               $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
+              $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
               $array['desc']=$data->desc;
+              $array['starnumber']=$data->starnumber;
               array_push($TripAgent,$array);
            }
           return $this->apiResponse($TripAgent,'ok',200);
@@ -239,7 +270,7 @@ public function resetpassword(Request $request)
    //
     public function alleducationcompany_tripgents($lang)
     {
-      $data['Tripagents']=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo','desc')
+      $data['Tripagents']=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo',"desc->$lang as desc",'starnumber','profile_photo')
          ->where('type','educational_service')
          ->where('verified_at','!=',Null)
         ->orderby('id','desc')->paginate(10);
@@ -254,7 +285,9 @@ public function resetpassword(Request $request)
               $array['Tripagent']=$data->Tripagent;
               $array['phone']=$data->phone;
               $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
+              $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
               $array['desc']=$data->desc;
+              $array['starnumber']=$data->starnumber;
               array_push($TripAgent,$array);
            }
           return $this->apiResponse($TripAgent,'ok',200);
@@ -270,7 +303,7 @@ public function resetpassword(Request $request)
     public function get_tripagentbyid($lang,$id)
     {
       
-         $data=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo','type','desc')
+         $data=Tripagent::select('id',"name->$lang as Tripagent",'phone','photo','type',"desc->$lang as desc",'starnumber','profile_photo')
          ->where('id',$id)
          ->first();
          
@@ -282,7 +315,9 @@ public function resetpassword(Request $request)
             $array['phone']=$data->phone;
             $array['type']=$data->type;
             $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
+            $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
             $array['desc']=$data->desc;
+            $array['starnumber']=$data->starnumber;
             return $this->apiResponse($array,'ok',200);
          }
          else
@@ -299,16 +334,41 @@ public function resetpassword(Request $request)
 
     public function getTripgents_byServiceid($lang,$id)
     {
-   //   $data=Serivce::with('Tripagents')->findorfail($id);
-    $data=Serivce::select('id',"name->$lang as 'Service_Name'")
+    $data=Serivce::select('id',"name->$lang as Service_Name",'photo')
          ->with(['Tripagents'=>function($query) use($lang){
-          $query->select('trip_agents.id',"name->$lang as 'Tripagent_Name'",'phone','photo')
+          $query->select('trip_agents.id',"name->$lang as Tripagent_Name",'phone','photo','starnumber','profile_photo')
              ->where('trip_agents.verified_at',"!=",Null);
     }])->find($id);
-
-        if($data)
+  
+//return response(["data"=>$data->Tripagents]);
+     $HostName=request()->getHttpHost();
+        $tripagent=array();
+       foreach($data->Tripagents as $tripagents)
+       {
+         $array['service_id']=$data->id;
+            $array['service_name']=$data->Service_Name;
+            $array['service_photo']="$HostName/assets/uploads/Services/".$data->photo;
+            $array['Tripagent_id']=$tripagents->id;
+            $array['name']=$tripagents->Tripagent_Name;
+            $array['phone']=$tripagents->phone;
+            $array['starnumber']=$tripagents->starnumber;
+            $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$tripagents->photo;
+            $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$tripagents->profile_photo;
+            array_push($tripagent,$array);
+    }
+      //  {
+      //       $array['service_id']=$data->id;
+      //       $array['service_name']=$data->Service_Name;
+      //       $array['service_photo']="$HostName/public/assets/uploads/Services/".$data->photo;
+      //       $array['Tripagent_id']=$tripagents->id;
+      //       $array['name']=$tripagents->Tripagent_Name;
+      //       $array['phone']=$tripagents->phone;
+      //       $array['photo']="$HostName/public/assets/uploads/Profile/TripAgent/".$tripagents->photo;
+      //       array_push($tripagent,$array);
+      //  }
+        if($tripagent)
         { 
-         return $this->apiResponse($data,'ok',200);
+         return $this->apiResponse($tripagent,'ok',200);
         }
         else{
            return $this->apiResponse("",'No Data Found',404);
@@ -317,14 +377,28 @@ public function resetpassword(Request $request)
 
     public function getservices_byTripagentid($lang,$id)
     {
-      $data=Tripagent::select('id',"name->$lang as 'TripAgent'",'photo','starnumber')
+      $data=Tripagent::select('id',"name->$lang as TripAgent",'photo','starnumber','profile_photo')
            ->with(['Services'=>function($query) use($lang){
-          $query->select('serivces.id',"name->$lang as 'service_name'")
+          $query->select('serivces.id',"name->$lang as service_name",'photo')
                  ->where('status','active');
        }])->find($id);
-        if($data)      
+       $HostName=request()->getHttpHost();
+       $services=array();
+       foreach($data->Services as $Service)
+       {
+         $array['tripagent_id']=$data->id;
+            $array['tripagent_name']=$data->TripAgent;
+            $array['tripagent_photo']="$HostName/assets/Profile/TripAgent/".$data->photo;
+            $array['tripagentphoto_profile']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
+            $array['starnumber']=$data->starnumber;
+            $array['service_id']=$Service->id;
+             $array['service_name']=$Service->service_name;
+             $array['photo']="$HostName/assets/uploads/Services/".$Service->photo;
+            array_push($services,$array);
+    }
+        if($services)      
         {
-         return $this->apiResponse($data,'ok',200);
+         return $this->apiResponse($services,'ok',200);
         }
         else
         {
@@ -356,7 +430,7 @@ public function resetpassword(Request $request)
       if(TourGuide::get()->count()>0) 
       {
          $HostName=request()->getHttpHost();
-         $data['TourGuides']=Tourguide::select('id',"name->$lang as TourGuide",'phone','photo')
+         $data['TourGuides']=Tourguide::select('id',"name->$lang as TourGuide",'phone','photo','starnumber')
          ->where('verified_at',"!=",Null)
          ->orderby('id','desc')->paginate(10);
          $TourGuide=[];
@@ -365,7 +439,8 @@ public function resetpassword(Request $request)
             $array['id']=$data->id;
             $array['TourGuide']=$data->TourGuide;
             $array['phone']=$data->phone;
-            $array['photo']="$HostName/assets/uploads/Profile/TourGuide/".$data->photo;
+            $array['starnumber']=$data->starnumber;
+            $array['photo']="$HostName/assets/uploads/Profile/TourGuide/Tripbackground/".$data->photo;
             array_push($TourGuide,$array);
          }
      return $this->apiResponse($TourGuide,'ok',200);
@@ -385,16 +460,18 @@ public function resetpassword(Request $request)
      if(Tourguide::where('id',$id)->where('verified_at',"!=",Null)->exists())
      {
       $HostName=request()->getHttpHost();
-      $data['TourGuide']=Tourguide::select('id',"name->$lang as TourGuide",'phone','photo')
+      $data['TourGuide']=Tourguide::select('id',"name->$lang as TourGuide",'phone','photo','profile_photo',"desc->$lang as descrp",'starnumber')
        ->orderby('id','desc')
        ->where('id',$id)
        ->first();
-      
+    //  return response()->json($data['TourGuide']);
          $array['id']=$data['TourGuide']->id;
          $array['TourGuide']=$data['TourGuide']->TourGuide;
          $array['phone']=$data['TourGuide']->phone;
-         $array['photo']="$HostName/assets/uploads/Profile/TourGuide/".$data['TourGuide']->photo;
-
+         $array['profile_photo']="$HostName/assets/uploads/Profile/TourGuide/".$data['TourGuide']->profile_photo;
+         $array['background_photo']="$HostName/assets/uploads/Profile/TourGuide/Tripbackground/".$data['TourGuide']->photo;
+         $array['desc']=$data['TourGuide']->descrp;
+         $array['starnumber']=$data['TourGuide']->starnumber;
          return $this->apiResponse($array,'ok',200);
       
      
@@ -435,7 +512,7 @@ public function resetpassword(Request $request)
     public function viewplacevisit_details($lang,$id)
     {
       $HostName=request()->getHttpHost();
-      $data=PlacesToVisit::select('id',"name->$lang as Place_Name",'photo')
+      $data=PlacesToVisit::select('id',"name->$lang as Place_Name",'photo',"desc->$lang as descrption")
                            ->where('id',$id)
                            ->first();
       if($data !==Null)
@@ -443,6 +520,7 @@ public function resetpassword(Request $request)
           $array['id']=$data->id;
           $array['Place_name']=$data->Place_Name;
           $array['ImageURL']="$HostName/assets/uploads/PlacesToVisit/".$data->photo;
+          $array['desc']=$data->descrption;
           return $this->apiResponse($array,'ok',200);
 
          }
@@ -523,6 +601,49 @@ public function resetpassword(Request $request)
 
       }
     }
-    
+
+  public function getuser($userid)
+  {
+  
+     if(User::where('id',$userid)->exists())
+     {
+      $url=request()->getHttpHost();
+      $data=User::select('id','name','photo','phone')
+                        ->where('id',$userid)
+                     ->first();
+    $userdata['user_id']=$data->id;
+    $userdata['username']=$data->name;
+    $userdata['phone']=$data->phone;
+    $userdata['photo']="$url/public/assets/uploads/Profile/UserProfile/".$data->photo;
+    return $this->apiResponse($userdata,'ok',200);
+
+     }
+     else{
+      return $this->apiResponse('','No User Found',404);
+
+     }
+  }
+
+  public function userprofile($userid)
+  {
+   if(User::where('id',$userid)->exists())
+   {
+    $url=request()->getHttpHost();
+    $data=User::select('id','name','photo','phone')
+                      ->where('id',$userid)
+                   ->first();
+                   
+  $userdata['user_id']=$data->id;
+  $userdata['username']=$data->name;
+  $userdata['phone']=$data->phone;
+  $userdata['photo']="$url/public/assets/uploads/Profile/UserProfile/".$data->photo;
+  return $this->apiResponse($userdata,'ok',200);
+
+   }
+   else{
+    return $this->apiResponse('','No User Found',404);
+
+   }
+  }
 
 }

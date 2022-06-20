@@ -22,5 +22,6 @@ return [
     'TermsAndConditions'=>'الشروط والأحكام',
      'UsagePolicy'=>'سياسة الإستخدام',
      'AdsSlideShow'=>'شاشة عرض الاعلانات',
-
+     'Settings'=>'الإعدادت',
+     'Currencies'=>'العملات',
 ];

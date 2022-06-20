@@ -65,7 +65,7 @@
                                                href="#" data-toggle="modal"  data-target="#deleteModola_help"
                                                delete-id="{{$help->id}}">
                                                <i class="fa fa-trash"></i>
-                                            </a>
+                                            </a>deleteModola_Package
                                     </td>
                                 </tr>
                               @endforeach

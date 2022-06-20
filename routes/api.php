@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\TermsCondtionsController;
+use App\Http\Controllers\Api\Users\BookingController;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
 use App\Http\Controllers\Api\Users\FaviourtTripagentController;
 use App\Http\Controllers\Api\Users\HelpRequestController;
@@ -37,6 +38,9 @@ Route::group(['prefix'=>'user','middleware'=>'api'],function(){
     Route::get('getTripgents_byServiceid/{lang}/{id}',[UserController::class,'getTripgents_byServiceid']);    
     Route::get('getservices_byTripagentid/{lang}/{id}',[UserController::class,'getservices_byTripagentid']);    
     Route::get('showtourguide_byid/{lang}/{id}',[UserController::class,'showtourguide_byid']); 
+   
+    //for mahmoud
+    Route::get('/get_userdata/{userid}',[UserController::class,'getuser']);
 
 
     
@@ -47,6 +51,7 @@ Route::group(['prefix'=>'user','middleware'=>'api'],function(){
     Route::get('/showusageploicy/{lang}', [UserController::class, 'showusageploicy']);
     
     Route::get('/showads_slideshow', [UserController::class, 'showads_slideshow']);
+
 
     
 });
@@ -75,7 +80,6 @@ Route::group([
         //UserDshboard
         Route::post('/updateuser', [UserController::class, 'updateuser']);  
         Route::post('/resetpassword', [UserController::class, 'resetpassword']);  
-
         // Route::get('getallservices/{lang}',[UserController::class,'getallservices']);    
      
         /*
@@ -94,18 +98,32 @@ Route::group([
         Route::get('service_attributes/{id}',[UserController::class,'getservice_attributes']); 
 
         //help_requests
+        Route::get('/FormHelpRequest/{lang}',[HelpRequestController::class,'FormHelpRequest']); 
         Route::post('/send_helprequest',[HelpRequestController::class,'send_helprequest']); 
         Route::get('/showhelp_requests/{lang}/{user_id}',[HelpRequestController::class,'showhelprequests']); 
-        
         //Favourite_TripAgent
-        Route::get('/UserFavourite_TripAgent/{User_id}',[FaviourtTripagentController::class,'index']);
-        Route::get('/UserFavourite_ShowTripAgent/{id}',[FaviourtTripagentController::class,'showtripagent']);
+        Route::get('/UserFavourite_TripAgent/{lang}/{User_id}',[FaviourtTripagentController::class,'index']);
+        Route::get('/UserFavourite_ShowTripAgent/{lang}/{id}',[FaviourtTripagentController::class,'showtripagent']);
+       
         Route::post('/AddFavourite_TripAgent',[FaviourtTripagentController::class,'store']);
+        
+        //bookingform
+        
+        Route::get('/bookingform/{lang}/{Tripagent_id}/{Service_id}',[BookingController::class,'bookingform']);
+        Route::post('/storebooking',[BookingController::class,'storebooking']);
+        Route::get('/getuser_bookingsdeatils/{lang}/{id}',[BookingController::class,'getuserbookings']);
+        Route::get('/userbookings/{lang}/{id}',[BookingController::class,'userbookings']);
+
+        
+        //showall_attribute
+        Route::get('/showall_attribute/{lang}',[BookingController::class,'showall_attribute']);
+
         
     });
 
     Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
     Route::get('/commonquestion/{lang}', [CommonQuestions::class, 'index']);
+
 });
 
 

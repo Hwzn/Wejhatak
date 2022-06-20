@@ -21,4 +21,9 @@ class Tripagent extends Model
     {
       return $this->belongsToMany('App\Models\User','faviourt_tripagents','tripagent_id','service_id');
     }
+
+    public function Packages()
+    {
+      return $this->belongsToMany('App\Models\Package','tripagent_package','tripagent_id','package_id');
+    }
 }

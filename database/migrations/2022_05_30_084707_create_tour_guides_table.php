@@ -23,6 +23,7 @@ class CreateTourGuidesTable extends Migration
             $table->integer('starnumber')->nullable();
             $table->integer('evaulation')->nullable();
             $table->string('photo')->nullable();
+            $table->string('profile_photo')->nullable();
             $table->text('desc')->nullable();
             $table->timestamps();
         });

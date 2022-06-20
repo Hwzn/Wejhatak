@@ -32,4 +32,10 @@ class Serivce extends Model
       return $this->belongsToMany('App\Models\Tripagent','tripagent_service','service_id','tripagent_id');
     }
 
+    public function select_types()
+    {
+        return $this->belongsToMany('App\Models\SelectType','selecttype_service','service_id','selecttype_id');
+    }
+
+
 }

@@ -20,4 +20,7 @@ return [
     'Helps'=>'Helps',
     'TermsAndConditions'=>'TermsAndConditions',
     'UsagePolicy'=>'UsagePolicy',
+    'Settings'=>'Settings',
+    'Currencies'=>'العملات',
+
 ];

@@ -42,49 +42,12 @@
                         <ul id="Grades-menu" class="collapse" data-parent="#sidebarnav">
                             <li><a href="{{route('showservices')}}">{{trans('main_trans.Services_list')}}</a></li>
                             <li><a href="{{route('showservice_attribute')}}">{{trans('serviceattribute_trans.service_attribute')}}</a></li>
+                            <li><a href="{{route('packages')}}">{{trans('packages_trans.Packages')}}</a></li>
 
+                            
                         </ul>
                     </li>
                  
-                  <!-- Contactus-->
-                  <li>
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#contactus-menu">
-                            <div class="pull-left"><i class="fas fa-building"></i><span
-                                    class="right-nav-text">{{trans('main_trans.Contactus')}}</span></div>
-                            <div class="pull-right"><i class="ti-plus"></i></div>
-                            <div class="clearfix"></div>
-                        </a>
-                        <ul id="contactus-menu" class="collapse" data-parent="#sidebarnav">
-                            <li><a href="{{route('contactus')}}">{{trans('main_trans.Contactus_Messages')}}</a></li>
-                        </ul>
-                    </li>
-                 
-                     <!-- aboutus-->
-                     <li>
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#aboutus-menu">
-                            <div class="pull-left"><i class="fas fa-building"></i><span
-                                    class="right-nav-text">{{trans('main_trans.Aboutus')}}</span></div>
-                            <div class="pull-right"><i class="ti-plus"></i></div>
-                            <div class="clearfix"></div>
-                        </a>
-                        <ul id="aboutus-menu" class="collapse" data-parent="#sidebarnav">
-                            <li><a href="{{route('aboutus')}}">{{trans('Aboutus_trans.aboutus')}}</a></li>
-                        </ul>
-                    </li>
-
-                    <!-- ShowCommonQuestions -->
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#CommonQuestions-menu">
-                            <div class="pull-left"><i class="fas fa-building"></i><span
-                                    class="right-nav-text">{{trans('main_trans.ShowCommonQuestions')}}</span></div>
-                            <div class="pull-right"><i class="ti-plus"></i></div>
-                            <div class="clearfix"></div>
-                        </a>
-                        <ul id="CommonQuestions-menu" class="collapse" data-parent="#sidebarnav">
-                            <li><a href="{{route('ShowCommonQuestions')}}">{{trans('CommonQuestions_trans.CommonQuestions')}}</a></li>
-                        </ul>
-                    </li>
-
                       <!-- ShoHelps -->
                       <li>
                         <a href="javascript:void(0);" data-toggle="collapse" data-target="#ShoHelps-menu">
@@ -100,32 +63,7 @@
                         </ul>
                     </li>
 
-                     <!-- Terms and Condition -->
-                     <li>
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#ShoTerms-menu">
-                            <div class="pull-left"><i class="fas fa-building"></i><span
-                                    class="right-nav-text">{{trans('main_trans.TermsAndConditions')}}</span></div>
-                            <div class="pull-right"><i class="ti-plus"></i></div>
-                            <div class="clearfix"></div>
-                        </a>
-                        <ul id="ShoTerms-menu" class="collapse" data-parent="#sidebarnav">
-                            <li><a href="{{route('terms_conditions')}}">{{trans('Terms_trans.TermsAndConditions')}}</a></li>
-                        </ul>
-                    </li>
 
-
-                   <!-- Terms and Condition -->
-                    <li>
-                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#UsagePolicy-menu">
-                            <div class="pull-left"><i class="fas fa-building"></i><span
-                                    class="right-nav-text">{{trans('main_trans.UsagePolicy')}}</span></div>
-                            <div class="pull-right"><i class="ti-plus"></i></div>
-                            <div class="clearfix"></div>
-                        </a>
-                        <ul id="UsagePolicy-menu" class="collapse" data-parent="#sidebarnav">
-                            <li><a href="{{route('usagepolicy')}}">{{trans('main_trans.UsagePolicy')}}</a></li>
-                        </ul>
-                    </li>
 
                      <!-- Ads SlideShow -->
                      <li>
@@ -137,6 +75,51 @@
                         </a>
                         <ul id="AdsSlideShow-menu" class="collapse" data-parent="#sidebarnav">
                             <li><a href="{{route('Ads_SlideShow')}}">{{trans('AdsSlideShow_trans.Ads_list')}}</a></li>
+                        </ul>
+                    </li>
+
+                  
+                     <!-- OtherService -->
+                     <li>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#OtherServices-menu">
+                            <div class="pull-left"><i class="fas fa-building"></i><span
+                                    class="right-nav-text">{{trans('otherservice_trans.OtherServices')}}</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="OtherServices-menu" class="collapse" data-parent="#sidebarnav">
+                            <li><a href="{{route('show_otherservies')}}">{{trans('otherservice_trans.OtherServices list')}}</a></li>
+                            <li><a href="{{route('showconsultation_type')}}">{{trans('consulationtype_trans.Consultion_Types list')}}</a></li>
+                            <li><a href="{{route('showmethodcommunicate')}}">{{trans('MethodCommunicate_trans.method communicate list')}}</a></li>
+                            <li><a href="{{route('showtimecommunicate')}}">{{trans('TimeCommunicate_trans.time communicate list')}}</a></li>
+                            <li><a href="{{route('show_cartype')}}">{{trans('cartypes_trans.car_typeslist')}}</a></li>
+
+                        </ul>
+                    </li>
+
+                   
+                    
+                     <!-- Terms and Condition -->
+                     <li>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#ShoTerms-menu">
+                            <div class="pull-left"><i class="fa-solid fa-gears"></i><span
+                                    class="right-nav-text">{{trans('main_trans.Settings')}}</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="ShoTerms-menu" class="collapse" data-parent="#sidebarnav">
+                            <li><a href="{{route('terms_conditions')}}">{{trans('Terms_trans.TermsAndConditions')}}</a></li>
+                            <hr>
+                            <li><a href="{{route('usagepolicy')}}">{{trans('main_trans.UsagePolicy')}}</a></li>
+                           <hr>
+                            <li><a href="{{route('ShowCommonQuestions')}}">{{trans('CommonQuestions_trans.CommonQuestions')}}</a></li>
+                           <hr>
+                            <li><a href="{{route('aboutus')}}">{{trans('Aboutus_trans.aboutus')}}</a></li>
+                           <hr>
+                            <li><a href="{{route('contactus')}}">{{trans('main_trans.Contactus')}}</a></li>
+                            <hr>
+                            <li><a href="{{route('currency')}}">{{trans('main_trans.Currencies')}}</a></li>
+
                         </ul>
                     </li>
                 </ul>

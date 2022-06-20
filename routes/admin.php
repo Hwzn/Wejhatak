@@ -9,11 +9,18 @@ use App\Http\Controllers\Admin\AttributeTypeController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AdsController;
 use App\Http\Controllers\Admin\AdsSlideShowController;
+use App\Http\Controllers\admin\CarTypeController;
 use App\Http\Controllers\Admin\CommonQuestions;
+use App\Http\Controllers\admin\ConsultationTypeController;
 use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\HelpController;
+use App\Http\Controllers\admin\MethodCommunicationController;
+use App\Http\Controllers\admin\OtherServiceController;
 use App\Http\Controllers\Admin\TermConditionController;
+use App\Http\Controllers\admin\TimeCommunicationController;
 use App\Http\Controllers\Admin\UsagePolicyController;
+use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\admin\PackageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -156,7 +163,66 @@ Route::group(
     Route::get('/edit_adsslide/{id}',[AdsSlideShowController::class,'edit'])->name('edit_adsslide'); 
     Route::post('/update_ads',[AdsSlideShowController::class,'update'])->name('update_ads');
     
-    
+    //car_type
+    Route::get('/show_cartype',[CarTypeController::class,'index'])->name('show_cartype');
+    Route::post('/addcartype',[CarTypeController::class,'store'])->name('addcartype');
+    Route::get('/edit_cartype/{id}',[CarTypeController::class,'edit'])->name('edit_cartype'); 
+
+    Route::post('/update_cartype',[CarTypeController::class,'update'])->name('update_cartype');
+    Route::post('/delete_cartype/{id}',[CarTypeController::class,'destroy'])->name('delete_cartype');
+
+    //methodcommunicate
+    Route::get('/showmethodcommunicate',[MethodCommunicationController::class,'index'])->name('showmethodcommunicate');
+    Route::post('/add_methodcommunicate',[MethodCommunicationController::class,'store'])->name('add_methodcommunicate');
+    Route::get('/edit_MethodCommunicate/{id}',[MethodCommunicationController::class,'edit'])->name('edit_MethodCommunicate'); 
+
+    Route::post('/update_methodcommunicate',[MethodCommunicationController::class,'update'])->name('update_methodcommunicate');
+    Route::post('/delete_methodcommunicate/{id}',[MethodCommunicationController::class,'destroy'])->name('delete_methodcommunicate');
+
+     //timecommunicate
+     Route::get('/showtimecommunicate',[TimeCommunicationController::class,'index'])->name('showtimecommunicate');
+     Route::post('/add_timecommunicate',[TimeCommunicationController::class,'store'])->name('add_timecommunicate');
+     Route::get('/edit_timeCommunicate/{id}',[TimeCommunicationController::class,'edit'])->name('edit_timeCommunicate'); 
+ 
+     Route::post('/update_timecommunicate',[TimeCommunicationController::class,'update'])->name('update_timecommunicate');
+     Route::post('/delete_timecommunicate/{id}',[TimeCommunicationController::class,'destroy'])->name('delete_timecommunicate');
+ 
+    //consultationtype
+    Route::get('/showconsultation_type',[ConsultationTypeController::class,'index'])->name('showconsultation_type');
+    Route::post('/add_consultationtype',[ConsultationTypeController::class,'store'])->name('add_consultationtype');
+    Route::get('/edit_consultationtype/{id}',[ConsultationTypeController::class,'edit'])->name('edit_consultationtype'); 
+
+    Route::post('/update_consultationtype',[ConsultationTypeController::class,'update'])->name('update_consultationtype');
+    Route::post('/delete_consultationtype/{id}',[ConsultationTypeController::class,'destroy'])->name('delete_consultationtype');
+
+//otherSerivces
+Route::get('/show_otherservies',[OtherServiceController::class,'index'])->name('show_otherservies');
+Route::post('/add_otherservies',[OtherServiceController::class,'store'])->name('add_otherservies');
+Route::get('/edit_otherservies/{id}',[OtherServiceController::class,'edit'])->name('edit_otherservies'); 
+
+Route::post('/update_otherservies',[OtherServiceController::class,'update'])->name('update_otherservies');
+Route::post('/delete_otherservies/{id}',[OtherServiceController::class,'destroy'])->name('delete_otherservies');
+
+//CurrencyController
+Route::get('/currency',[CurrencyController::class,'index'])->name('currency');
+Route::get('/edit_currency/{id}',[CurrencyController::class,'edit'])->name('edit_currency');
+Route::post('/delete_currency/{id}',[CurrencyController::class,'destroy'])->name('delete_currency');
+Route::post('/addcurrency',[CurrencyController::class,'store'])->name('addcurrency');
+Route::post('/update_currency',[CurrencyController::class,'update'])->name('update_currency');
+
+//pakages
+Route::get('/packages',[PackageController::class,'index'])->name('packages');
+Route::post('/add_package',[PackageController::class,'store'])->name('add_package');
+Route::post('/delete_package/{id}',[PackageController::class,'destroy'])->name('delete_package');
+Route::get('/edit_package/{id}',[PackageController::class,'edit'])->name('edit_package');
+Route::post('/update_package',[PackageController::class,'update'])->name('update_package');
+
+
+
+
+
+
+
     });
 
     

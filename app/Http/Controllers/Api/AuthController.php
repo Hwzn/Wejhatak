@@ -36,6 +36,7 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
        $user=User::where('phone',$request->phone)->first();
+       
        if($user)
        {
            if($user->verified_at==Null)
@@ -125,14 +126,36 @@ class AuthController extends Controller
     // }
 
     public function userProfile() {
-        return response()->json(auth()->user());
+        $urlhost=request()->getHttpHost();
+            $user=auth()->user();
+             $user['id']=auth()->user()->id;
+            $user['name']=auth()->user()->name;
+            $user['phone']=auth()->user()->phone;
+            $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo;
+            $user['verified_at']=auth()->user()->verified_at;
+            $user['created_at']=auth()->user()->created_at;
+            $user['updated_at']=auth()->user()->updated_at;
+        return response()->json($user);
     }
     protected function createNewToken($token){
+        $urlhost=request()->getHttpHost();
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            // 'expires_in' => auth()->factory()->getTTL() * 60,
             'expires_in' => auth()->factory()->getTTL() * 60,
-            'user' => auth()->user()
+            $user['id']=auth()->user()->id,
+            $user['name']=auth()->user()->name,
+            $user['phone']=auth()->user()->phone,
+            $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo,
+            $user['verified_at']=auth()->user()->verified_at,
+            $user['created_at']=auth()->user()->created_at,
+            $user['updated_at']=auth()->user()->updated_at,
+
+            
+            // 'user' => auth()->user()
+            'user' => $user
+
         ]);
     }
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TripagentsService extends Model
 {
     use HasFactory;
-    protected $table='tripagents_service';
+    protected $table='tripagent_service';
     protected $guarded=['id'];
 
     // public function Tripagents()
