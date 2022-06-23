@@ -64,13 +64,33 @@ class BookingController extends Controller
    }])->where('id',$Service_id)->first();
 
 //pakcages
-$data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name->$lang as tripagent_name")->with(['Packages'=>function($query) use($lang){
-   $query->select('packages.id',"packages.destination->$lang as package",'packages.price',"currencies.short_name->$lang as currency","packages.person_num->$lang as Persons_number",'packages.days')
-   ->join('currencies','currencies.id', '=', 'packages.currency_id');
-   // ->orderby('order','asc');
-}])->where('id',$Tripagent_id)->first();
- 
+if($Service_id=='1')
+{
+   $data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name->$lang as tripagent_name")->with(['Packages'=>function($query) use($lang){
+      $query->select('packages.id as package_id',"packages.destination->$lang as package",'packages.price',"currencies.short_name->$lang as currency","packages.person_num->$lang as Persons_number",'packages.days'
+      ,'packages.rate',"packages.package_desc->$lang as 'package_desc'","packages.package_contain->$lang as 'package_contain'"
+      ,"packages.conditions->$lang as 'conditions'","packages.cancel_conditions->$lang as 'cancel_conditions'")
+      ->join('currencies','currencies.id', '=', 'packages.currency_id')
+      ->where('packages.status','=','active')
+       ->orderby('packages.id','asc');
+   }])->where('id',$Tripagent_id)->first();
    
+   if(($data['Tripagent_Packages']->Packages)->count()>0)
+   {
+    
+   $data['pakcages_destination']=Package::select("packages.destination->$lang as package")
+   ->where('status','active')->pluck('package');
+   $data['pakcages_nigthsnumber']=Package::select("packages.days")
+   ->where('status','active')->distinct()
+   ->pluck('days');  
+   $data['pakcages_maxnprice']=Package::where('status','active')
+         ->max('packages.price');
+   $data['pakcages_minnprice']=Package::where('status','active')
+   ->min('packages.price');       
+   }
+}
+
+                     
    //Tripagent
    $Tripagent=Tripagent::where('id',$Tripagent_id)
                       ->select('id',"name->$lang as Tripagent_name",'photo',"desc->$lang as desc")
@@ -114,7 +134,34 @@ $data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name
    }
     }
 
-
+      public function quick_requestform($lang)
+      {
+         $url=request()->getHttpHost();
+         $data['Service_Attribute']=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['attributes'=>function($query) use($lang){
+            $query->select('attributes.id',"attributes.name->en as attribute_name",'service_attribute.order as order','attribute_types.name as attributetype_name')
+            ->join('attribute_types','attributes.attr_typeid', '=', 'attribute_types.id')
+            ->orderby('order','asc');
+         }])->where('id',9)->first();
+      
+     
+         
+         $Service_Select=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['select_types'=>function($query3) use($lang){
+            $query3->select('select_types.id',"select_types.name->en as DropDownType","selecttype_elements.name->$lang as DropDownValue")
+              ->join('selecttype_elements','selecttype_elements.selecttype_id', '=', 'select_types.id');
+         }])->where('id',9)->first();
+      
+         $data['DropDown_Lists']=collect($Service_Select->select_types)
+         ->groupBy('DropDownType')->toArray();
+      
+         if(!is_null($data)) 
+         {
+            return $this->apiResponse($data,'ok',200);
+         }   
+         else{
+            return $this->apiResponse('','No Data Found',404);
+      
+         }
+      }
     public function storebooking(Request $request)
     {
       
@@ -154,11 +201,13 @@ $data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name
        //   return response()->json($booking_attribute);
      $package_id='';
        if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
-      
+     $tripagent_id='';
+     if(!empty($data['tripagent_id']))  $tripagent_id=$data['tripagent_id']; else $tripagent_id=Null;
+
          $booking=array(
             'User_id'=>$data['user_id'],
             'Service_id'=>$data['service_id'],
-            'Tripagent_id'=>$data['tripagent_id'],
+            'Tripagent_id'=>$tripagent_id,
            
             'Package_id'=>$package_id,
             'booking_details'=>json_encode($booking_attribute,JSON_UNESCAPED_UNICODE),
@@ -285,10 +334,18 @@ $data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name
               ->first();
               $booking[$data->id]['Service_Name']=$service->service_name;
 
-              $Tripagent=Tripagent::select('id',"name->$lang as name",'photo')->where('id',$data->Tripagent_id)->first();
-              $booking[$data->id]['Tripagent_id']=$Tripagent->id;
-              $booking[$data->id]['Tripagent_name']=$Tripagent->name;
-              $booking[$data->id]['Tripagent_photo']="$HostName/public/assets/uploads/Profile/TripAgent/".$Tripagent->photo;
+              if(!$data->Tripagent_id==Null)
+              {
+               $Tripagent=Tripagent::select('id',"name->$lang as name",'photo')->where('id',$data->Tripagent_id)->first();
+               $booking[$data->id]['Tripagent_id']=$Tripagent->id;
+               $booking[$data->id]['Tripagent_name']=$Tripagent->name;
+               $booking[$data->id]['Tripagent_photo']="$HostName/public/assets/uploads/Profile/TripAgent/".$Tripagent->photo;
+              }
+              else
+              {
+               $booking[$data->id]['Tripagent_name']='Admin';
+              }
+            
              if($lang=='ar' && $data->status=='pending')
              {
                $booking[$data->id]['Status']='تحت المراجعة';
@@ -331,6 +388,52 @@ $data['Tripagent_Packages']=Tripagent::select('trip_agents.id',"trip_agents.name
       else{
          return $this->apiResponse('','Data  Not Found',404);
       }
+    }
+
+
+    public function package_filter(Request $request,$lang)
+    {
+      $lang=strtolower($lang);
+      $search=$request->all();
+      // return response()->json($search);
+      if(isset($search['days']) && $search['days']!='null') $days=$search['days'];else $days='all';
+      if(isset($search['destination']) && $search['destination']!='null') $destination=$search['destination'];else $destination='all';
+
+      if(isset($search['fromprice']) && $search['fromprice']!='null') $fromprice=$search['fromprice'];else $fromprice='all';
+      if(isset($search['toprice']) && $search['toprice']!='null') $toprice=$search['toprice'];else $toprice='all';
+
+      $data=Package::select('packages.id as package_id',"packages.destination->$lang as package",'packages.price',"currencies.short_name->$lang as currency","packages.person_num->$lang as Persons_number",'packages.days'
+         ,'packages.rate',"packages.package_desc->$lang as 'package_desc'","packages.package_contain->$lang as 'package_contain'"
+         ,"packages.conditions->$lang as 'conditions'","packages.cancel_conditions->$lang as 'cancel_conditions'")
+         ->join('currencies','currencies.id', '=', 'packages.currency_id')
+         ->where('packages.status','=','active')
+         ->where(function($query) use($days,$destination,$fromprice,$toprice,$lang){
+            if($days!=='all')
+            {
+               $query->where('packages.days','=',$days);
+            }
+            if($destination!=='all')
+            {
+               $query->where("packages.destination->$lang",'=',$destination);
+            }
+            if($fromprice!=='all' && $toprice!=='all')
+            {
+               $query->where("packages.price",'>=',$fromprice)
+                     ->where("packages.price",'<=',$toprice);
+
+            }
+         })
+          ->orderby('packages.id','asc')
+          ->paginate(10);
+          
+          if($data->count()>0)
+          {
+             return $this->apiResponse($data,'ok',200);
+    
+          }
+          else{
+             return $this->apiResponse('','Data  Not Found',404);
+          }
     }
    }
 

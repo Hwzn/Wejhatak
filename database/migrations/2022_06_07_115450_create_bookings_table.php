@@ -18,13 +18,13 @@ class CreateBookingsTable extends Migration
             $table->foreignId('User_id')->references('id')->on('users')
             ->onDelete('cascade')
             ->onUpdate('cascade');
-            $table->foreignId('Tripagent_id')->references('id')->on('trip_agents')
+            $table->foreignId('Tripagent_id')->nullable()->references('id')->on('trip_agents')
             ->onDelete('cascade')
             ->onUpdate('cascade');
             $table->foreignId('Service_id')->references('id')->on('serivces')
             ->onDelete('cascade')
             ->onUpdate('cascade');
-            $table->foreignId('Package_id')->references('id')->on('packages')
+            $table->foreignId('Package_id')->nullable()->references('id')->on('packages')
             ->onDelete('cascade')
             ->onUpdate('cascade');
             $table->text('booking_details');

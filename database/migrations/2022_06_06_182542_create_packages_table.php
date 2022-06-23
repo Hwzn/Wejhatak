@@ -19,7 +19,7 @@ class CreatePackagesTable extends Migration
             $table->foreignId('currency_id')->references('id')->on('currencies')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->string('price');
+            $table->integer('price');
             $table->string('person_num');
             $table->integer('days');
             $table->integer('rate')->nullable();

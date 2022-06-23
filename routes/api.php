@@ -110,15 +110,19 @@ Route::group([
         //bookingform
         
         Route::get('/bookingform/{lang}/{Tripagent_id}/{Service_id}',[BookingController::class,'bookingform']);
+        Route::get('/quick_requestform/{lang}',[BookingController::class,'quick_requestform']);
+
         Route::post('/storebooking',[BookingController::class,'storebooking']);
         Route::get('/getuser_bookingsdeatils/{lang}/{id}',[BookingController::class,'getuserbookings']);
         Route::get('/userbookings/{lang}/{id}',[BookingController::class,'userbookings']);
+        Route::post('/package_filter/{lang}',[BookingController::class,'package_filter']);
 
         
         //showall_attribute
         Route::get('/showall_attribute/{lang}',[BookingController::class,'showall_attribute']);
 
-        
+        //user notification
+        Route::get('/show_notification/{userid}',[UserController::class,'shownotification']);
     });
 
     Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);

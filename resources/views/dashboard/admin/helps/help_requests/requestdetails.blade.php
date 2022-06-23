@@ -23,7 +23,10 @@
                                     for="exampleFormControlTextarea1">{{ trans('helps_trans.request_details') }}
                                     :</label>
                                     <input class="form-control" name="request_id" type="hidden" />
+                                    <input class="form-control" name="user_id" type="hidden" />
+                                    <input class="form-control" name="ticket_num" type="hidden" />
 
+                                    
                                 <textarea class="form-control" name="usermessage" id="exampleFormControlTextarea1"
                                           rows="3" readonly></textarea>
                             </div>

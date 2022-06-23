@@ -44,5 +44,15 @@ class User extends Authenticatable implements JWTSubject
     {
       return $this->belongsToMany('App\Models\Tripagent','faviourt_tripagents','User_id','TripAgent_id');
     }
+
+    public function DeviceTokens()
+    {
+        return $this->hasMany('App\Models\DeviceToken');
+    }
+
+    public function Notifications()
+    {
+        return $this->belongsToMany('App\Models\UserNotification','user_notifications');
+    }
     
 }

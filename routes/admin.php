@@ -20,7 +20,7 @@ use App\Http\Controllers\Admin\TermConditionController;
 use App\Http\Controllers\admin\TimeCommunicationController;
 use App\Http\Controllers\Admin\UsagePolicyController;
 use App\Http\Controllers\Admin\CurrencyController;
-use App\Http\Controllers\admin\PackageController;
+use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -49,7 +49,7 @@ Route::group(
          
        
         Route::get('/admin/dashboard', function () {
-            return view('dashboard.Admin.dashboard');
+            return view('dashboard.admin.dashboard');
         })->name('dashboard.admin');
         
     //Servicess Root

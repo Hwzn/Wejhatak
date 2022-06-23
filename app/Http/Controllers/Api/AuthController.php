@@ -30,13 +30,14 @@ class AuthController extends Controller
     	$validator = Validator::make($request->all(), [
             'phone' => 'required|exists:users,phone',
             'password' => 'required|string|min:6',
+            'device_token'=>'required',
         ]);
-
+        // fffsllgglglglsssssssssssssssssssslgglgllgglllllllllllllllllllllllllllllllllg
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
        $user=User::where('phone',$request->phone)->first();
-       
+    //    return response($user);
        if($user)
        {
            if($user->verified_at==Null)
@@ -45,11 +46,30 @@ class AuthController extends Controller
 
            }
        }
-        if (! $token = auth()->attempt($validator->validated())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
+        // if (! $token = auth()->attempt($validator->validated())) {
+        //     return response()->json(['error' => 'Unauthorized'], 401);
+        // }
+        if (! $token = auth()->attempt(['phone'=>$request->phone,
+                 'password'=>$request->password]))
+         {
+                   return response()->json(['error' => 'Unauthorized'], 401);
+         }
+      
+          //send device token
+         $exists=$user->DeviceTokens()
+        ->where('token','=',$request->device_token)->exists();
+        if(!$exists)
+        {
+            $user->DeviceTokens()->create([
+                'token'=>$request->device_token,
+            ]);
+        } 
+        //send device token
+ 
         return $this->createNewToken($token);
+
+       
+      
     }
 
     public function register(Request $request) {
@@ -152,8 +172,7 @@ class AuthController extends Controller
             $user['created_at']=auth()->user()->created_at,
             $user['updated_at']=auth()->user()->updated_at,
 
-            
-            // 'user' => auth()->user()
+           
             'user' => $user
 
         ]);

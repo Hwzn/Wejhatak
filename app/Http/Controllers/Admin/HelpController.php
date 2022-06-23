@@ -5,13 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
 use App\Models\Help;
 use App\Models\HelpRequest;
+use App\Http\Controllers\Admin\Traits\SendNotificationsTrait;
+use App\Models\DeviceToken;
 
 class HelpController extends Controller
 {
-     public function index()
+  use SendNotificationsTrait;
+
+  public function index()
      {
          $data['helps']=Help::orderby('id','desc')->get();
          return view('dashboard.admin.helps.index')->with($data);
@@ -129,6 +132,11 @@ class HelpController extends Controller
 
       }
       else{
+        $user_tokens=DeviceToken::where('user_id',$request->user_id)->pluck('token')->toarray();
+        $noification_title="Update Hlep Request";
+        $notification_body='Your Request Number '.'#'.$request->ticket_num .' has been update2022';
+        // return response()->json($notification_body);
+
         $data=HelpRequest::where('id',$request->request_id)->update([
           'admin_reply'=>$request->admin_reply,
           'status'=>'solved'
@@ -137,8 +145,11 @@ class HelpController extends Controller
       
         if(!is_null($data))
         {
-          toastr()->success(trans('messages_trans.success'));
-          return response()->json(['success'=>'Added new records.']);
+           $this->sendnotification($request->user_id,$noification_title,$notification_body,$user_tokens);
+          //  $this->store_notification($request->user_id,$noification_title,$notification_body);
+
+           toastr()->success(trans('messages_trans.success'));
+           return response()->json(['success'=>'Added new records.']);
         }
       }
     }

@@ -108,7 +108,10 @@
          data={
             admin_reply:$("#requestdetail_Modola form textarea[name='admin_reply']").val(),
             request_id:$("#requestdetail_Modola form input[name='request_id']").val(),
-          };
+            user_id:$("#requestdetail_Modola form input[name='user_id']").val(),
+            ticket_num:$("#requestdetail_Modola form input[name='ticket_num']").val(),
+
+        };
        
         }
       
@@ -120,7 +123,8 @@
            
            success:function(data)
             {
-               
+            //    console.log(data);
+            //    return;
                 if(data.hasOwnProperty('success')){
                     location.reload(true);
                }else{
@@ -144,7 +148,11 @@ var getHref = button.data('href'); //get button href
         {
            
             $("#requestdetail_Modola form textarea[name='usermessage']").val(data.request_details);
+            $("#requestdetail_Modola form textarea[name='admin_reply']").val(data.admin_reply);
+            $("#requestdetail_Modola form input[name='user_id']").val(data.user_id);
+            $("#requestdetail_Modola form input[name='ticket_num']").val(data.ticket_num);
 
+            
             $("#requestdetail_Modola form input[name='request_id']").val(data.id);
             $("#requestdetail_Modola form input[name='request_status']").val(data.status);
 

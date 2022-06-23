@@ -24,8 +24,12 @@ use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\Attribute;
 use App\Models\CarType;
+use App\Models\UserNotification;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
+
+use Carbon\Carbon;
+
 class UserController extends Controller
 {
     use ApiResponseTrait;
@@ -252,6 +256,7 @@ public function resetpassword(Request $request)
               $array['id']=$data->id;
               $array['Tripagent']=$data->Tripagent;
               $array['phone']=$data->phone;
+              $array['Service_id']=TripagentsService::where('tripagent_id',$data->id)->orderby('id','desc')->pluck('service_id')->first();
               $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
               $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
               $array['desc']=$data->desc;
@@ -284,6 +289,7 @@ public function resetpassword(Request $request)
               $array['id']=$data->id;
               $array['Tripagent']=$data->Tripagent;
               $array['phone']=$data->phone;
+              $array['Service_id']=TripagentsService::where('tripagent_id',$data->id)->orderby('id','desc')->pluck('service_id')->first();
               $array['photo']="$HostName/assets/uploads/Profile/TripAgent/".$data->photo;
               $array['profile_photo']="$HostName/assets/uploads/Profile/TripAgent/profile/".$data->profile_photo;
               $array['desc']=$data->desc;
@@ -645,5 +651,25 @@ public function resetpassword(Request $request)
 
    }
   }
+  
+  public function shownotification($userid)
+  {
+   $today=Carbon::now();
+   $oldnotification=UserNotification::where('user_id',$userid)
+   ->where('expired_at','<=',$today)  
+   ->delete();
 
+   $user_notificaion=UserNotification::where('user_id',$userid)
+    ->where('expired_at','>=',$today)  
+    ->get();
+
+     if($user_notificaion->count()>0)
+     {
+     return $this->apiResponse($user_notificaion,'ok',200);
+   }
+   else{
+    return $this->apiResponse('','No User Found',404);
+
+   }
+  }
 }
