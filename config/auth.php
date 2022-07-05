@@ -54,6 +54,12 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        'tripagent-api' => [
+            'driver' => 'jwt',
+            'provider' => 'trip_agents',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -81,6 +87,10 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+        'trip_agents' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Tripagent::class,
         ],
       
       

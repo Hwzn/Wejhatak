@@ -16,5 +16,7 @@ return[
     'Message_Delete'=>'Data Deleted Success',
     'exists'=>'Data Already Exists',
     'Edit'=>'Edit',
+    'Pending'=>'Pending',
+    'Closed'=>'Closed',
   
 ];

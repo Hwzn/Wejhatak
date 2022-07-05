@@ -151,7 +151,17 @@ class AuthController extends Controller
              $user['id']=auth()->user()->id;
             $user['name']=auth()->user()->name;
             $user['phone']=auth()->user()->phone;
-            $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo;
+            // $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo;
+            $photo=auth()->user()->photo;
+            if(!$photo=='')
+            {
+              $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo;
+            }
+            else
+            {
+                $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".'defaultimage.jpg';
+            }
+            
             $user['verified_at']=auth()->user()->verified_at;
             $user['created_at']=auth()->user()->created_at;
             $user['updated_at']=auth()->user()->updated_at;

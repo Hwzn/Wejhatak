@@ -23,7 +23,7 @@
                                     <label for="Name"
                                            class="mr-sm-2">{{ trans('ContactUs_trans.name') }}
                                         :</label>
-                                    <input id="Name" type="text" name="name" class="form-control Addservice_Namear">
+                                    <input id="Name" type="text" name="name" readonly class="form-control Addservice_Namear">
                                     <input  type="hidden" name="contactus_id" class="form-control Addservice_Namear">
 
                                     
@@ -32,7 +32,7 @@
                                     <label for="Name_en"
                                            class="mr-sm-2">{{ trans('ContactUs_trans.phone') }}
                                         :</label>
-                                    <input type="text" class="form-control"   name="phone"
+                                    <input type="text" class="form-control"   name="phone" readonly
                                       class="form-control Addservice_Nameen">
                                       @error('Name_en')
                                                 <span class="text-danger" role="alert">
@@ -46,7 +46,7 @@
                                 <label
                                     for="exampleFormControlTextarea1">{{ trans('ContactUs_trans.message') }}
                                     :</label>
-                                <textarea class="form-control" name="message" id="exampleFormControlTextarea1"
+                                <textarea class="form-control" readonly name="message" id="exampleFormControlTextarea1"
                                           rows="6"></textarea>
                             </div>
                            

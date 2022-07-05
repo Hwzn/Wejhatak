@@ -98,14 +98,14 @@ class HelpController extends Controller
 
     public function helpRequests()
     {
-      $requests=HelpRequest::orderby('id','desc')->get();
+      $requests=HelpRequest::orderby('id','desc')->paginate(10);
      // return $requests;
       return view('dashboard.admin.helps.help_requests.requestshelp',compact('requests'));
     }
 
     public function view_attachment($filename)
     {
-      return response()->download(public_path('assets/uploads/UserHelpRequests/'.$filename));
+      return response()->download('public/assets/uploads/UserHelpRequests/'.$filename);
 
     }
 
@@ -139,7 +139,7 @@ class HelpController extends Controller
 
         $data=HelpRequest::where('id',$request->request_id)->update([
           'admin_reply'=>$request->admin_reply,
-          'status'=>'solved'
+          'status'=>'closed'
         ]);
   
       

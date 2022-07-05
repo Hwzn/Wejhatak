@@ -171,11 +171,14 @@ public function resetpassword(Request $request)
            $array['id']=$tripagent->id;
            $array['Tripagent_Name']=$tripagent->Tripagent_Name;
            $array['starnumber']=$tripagent->starnumber;
-          $array['Service_id']=TripagentsService::where('tripagent_id',$tripagent->id)->pluck('service_id')->first();
-          $array['photo']="$urlhost/assets/uploads/Profile/TripAgent/".$tripagent->photo;;
-          $array['profile_photo']="$urlhost/assets/uploads/Profile/TripAgent/profile/".$tripagent->profile_photo;;
+           $array['Service_id']=TripagentsService::where('tripagent_id',$tripagent->id)->pluck('service_id')->first();
+           $array['photo']="$urlhost/assets/uploads/Profile/TripAgent/".$tripagent->photo;;
+           $array['profile_photo']="$urlhost/assets/uploads/Profile/TripAgent/profile/".$tripagent->profile_photo;;
 
+         
+         
           array_push($data['tripagents'],$array);
+         
         }
        // tripagents
         
@@ -206,7 +209,25 @@ public function resetpassword(Request $request)
                              $array3['starnumber']=$tourguide->starnumber;
                              $array3['photo']="$urlhost/assets/uploads/Profile/TourGuide/Tripbackground/".$tourguide->photo;
                              array_push($data['tourguides'],$array3);
+
+                             $data['Service_Attribute']=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['attributes'=>function($query) use($lang){
+                              $query->select('attributes.id',"attributes.name->en as attribute_name",'service_attribute.order as order','attribute_types.name as attributetype_name')
+                              ->join('attribute_types','attributes.attr_typeid', '=', 'attribute_types.id')
+                              ->orderby('order','asc');
+                           }])->where('id',7)->first();
+
+                           $Service_Select=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['select_types'=>function($query3) use($lang){
+                              $query3->select('select_types.id',"select_types.name->en as DropDownType","selecttype_elements.name->$lang as DropDownValue")
+                                ->join('selecttype_elements','selecttype_elements.selecttype_id', '=', 'select_types.id');
+                           }])->where('id',7)->first();
+                        
+                           $data['DropDown_Lists']=collect($Service_Select->select_types)
+                           ->groupBy('DropDownType')->toArray();
+
                            }
+                         
+
+                         
      //tourguide
 
      //educational service
@@ -611,23 +632,36 @@ public function resetpassword(Request $request)
   public function getuser($userid)
   {
   
-     if(User::where('id',$userid)->exists())
-     {
-      $url=request()->getHttpHost();
-      $data=User::select('id','name','photo','phone')
-                        ->where('id',$userid)
-                     ->first();
-    $userdata['user_id']=$data->id;
-    $userdata['username']=$data->name;
-    $userdata['phone']=$data->phone;
-    $userdata['photo']="$url/public/assets/uploads/Profile/UserProfile/".$data->photo;
-    return $this->apiResponse($userdata,'ok',200);
+   if(User::where('id',$userid)->exists())
+   {
+    $url=request()->getHttpHost();
+    $data=User::select('id','name','photo','phone')
+                      ->where('id',$userid)
+                   ->first();
+  $userdata['user_id']=$data->id;
+  $userdata['username']=$data->name;
+  $userdata['phone']=$data->phone;
+  
+   $photo=$data->photo;
+          if(!$photo=='')
+          {
+            $userdata['photo']="$url/public/assets/uploads/Profile/UserProfile/".$data->photo;
 
-     }
-     else{
-      return $this->apiResponse('','No User Found',404);
+          }
+          else
+          {
+              $userdata['photo']="$url/public/assets/uploads/Profile/UserProfile/".'defaultimage.jpg';
+          }
+  
+ 
+  
+  return $this->apiResponse($userdata,'ok',200);
 
-     }
+   }
+   else{
+    return $this->apiResponse('','No User Found',404);
+
+   }
   }
 
   public function userprofile($userid)

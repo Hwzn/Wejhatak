@@ -168,6 +168,45 @@
                           </div>
                     </div>
                     
+                    <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label
+                                            for="exampleFormControlTextarea1">{{ trans('packages_trans.Package_notinclude_ar') }}
+                                            :</label>
+                                        <textarea class="form-control" name="notinclude_ar" id="exampleFormControlTextarea1"
+                                                rows="3"></textarea>
+                                    </div>
+                               </div>
+                                <div class="col-6">
+                                <div class="form-group">
+                                    <label
+                                        for="exampleFormControlTextarea1">{{ trans('packages_trans.Package_notinclude_en') }}
+                                        :</label>
+                                    <textarea class="form-control" name="notinclude_en" id="exampleFormControlTextarea1"
+                                            rows="3"></textarea>
+                                </div>
+                          </div>
+                    </div>
+                    
+                    
+                    <div class="row">
+                                <div class="col-6">
+                                    <label for="Name"
+                                           class="mr-sm-2">{{ trans('packages_trans.ploicy_conditions') }}
+                                        :</label>
+
+                                    <div class="box">
+                                                <select  class="fancyselect" name="policy_id">
+                                                @foreach($return_policiy as $return_police)
+                                                   <option value="{{$return_police->id}}">{{$return_police->name }}</option>
+                                                  @endforeach
+                                                </select>
+                                    </div>
+
+                                </div>
+                            </div>
+                    
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary"
                                 data-dismiss="modal">{{  trans('packages_trans.Close') }}</button>

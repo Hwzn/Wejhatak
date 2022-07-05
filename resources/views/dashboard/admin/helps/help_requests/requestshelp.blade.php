@@ -54,8 +54,14 @@
                                     <td>{{ $request->users->name }}</td>
                                     <td>{{ $request->helps->name }}</td>
                                     <td>
-                                       {{ $request->status}}
-                                     
+                                       @if ($request->status === 'pending')
+                                         <label
+                                              class="badge badge-danger">{{ trans('helps_trans.Pending') }}</label>
+                                          @else
+                                          <label
+                                              class="badge badge-success">{{ trans('helps_trans.Closed') }}</label>
+                                     @endif
+
                                     </td>
                                     <td>{{ $request->created_at}}</td>
                                     <td>
@@ -78,6 +84,9 @@
                                 </tr>
 
                               @endforeach
+                              <div class="d-flex justify-content-center w-100 mb-5">
+                              {!! $requests->render() !!}
+                              </div>
                             </tbody>
                         </table>
                
@@ -151,7 +160,7 @@ var getHref = button.data('href'); //get button href
             $("#requestdetail_Modola form textarea[name='admin_reply']").val(data.admin_reply);
             $("#requestdetail_Modola form input[name='user_id']").val(data.user_id);
             $("#requestdetail_Modola form input[name='ticket_num']").val(data.ticket_num);
-
+            $("#requestdetail_Modola form input[name='admin_reply']").val(data.admin_reply);
             
             $("#requestdetail_Modola form input[name='request_id']").val(data.id);
             $("#requestdetail_Modola form input[name='request_status']").val(data.status);

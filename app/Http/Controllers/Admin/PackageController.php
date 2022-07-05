@@ -8,12 +8,14 @@ use Illuminate\Http\Request;
 use App\Models\Package;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\RetrunPloicy;
 class PackageController extends Controller
 {
     public function index()
     {
         $data['Packages']=Package::orderby('id','asc')->get();
         $data['currencies']=Currency::orderby('id','asc')->get();
+        $data['return_policiy']=RetrunPloicy::orderby('id','asc')->get();
 
          return view('dashboard.admin.packages.index')->with($data);
     }
@@ -41,6 +43,7 @@ class PackageController extends Controller
              'person_num_ar.required'=>trans('validation.required'),
              'person_num_en.required'=>trans('validation.required'),
 
+             
              'days.required'=>trans('validation.required'),
         ]);
 
@@ -62,7 +65,10 @@ class PackageController extends Controller
                 'package_contain'=>['ar'=>$request->packagecontain_ar,'en'=>$request->packagecontain_ar],
                 'conditions'=>['ar'=>$request->conditions_ar,'en'=>$request->conditions_en],
                 'cancel_conditions'=>['ar'=>$request->cancelconditions_ar,'en'=>$request->cancelconditions_en],
+                'package_notinclude'=>['ar'=>$request->notinclude_ar,'en'=>$request->notinclude_en],
+                'ReturnPloicy_id'=>$request->policy_id,
 
+                
             );
 
 
@@ -131,6 +137,10 @@ class PackageController extends Controller
             'package_contain'=>['ar'=>$request->packagecontain_ar,'en'=>$request->packagecontain_ar],
             'conditions'=>['ar'=>$request->conditions_ar,'en'=>$request->conditions_en],
             'cancel_conditions'=>['ar'=>$request->cancelconditions_ar,'en'=>$request->cancelconditions_en],
+            'package_notinclude'=>['ar'=>$request->notinclude_ar,'en'=>$request->notinclude_en],
+            'ReturnPloicy_id'=>$request->policy_id,
+
+            
             'status'=>$request->status==1?'active':'notactive',
           ];
           

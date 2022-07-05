@@ -1,6 +1,6 @@
 <?php
 return[
-    'Helps_Types'=>'تصنيف المساعدات',
+    'Helps_Types'=>'تصنيف أنواع طلبات المساعدة',
     'Add_HelpType'=>'اضافة نوع مساعدة',
     'Requests_Help'=>'طلبات المساعدة',
     'helpname'=>'نوع المساعدة',
@@ -16,7 +16,8 @@ return[
     'Message_Delete'=>'تم حذف بنجاح',
     'exists'=>' البيانات موجودة مسبقا',
     'Edit'=>'تعديل',
-    
+    'Pending'=>'قيد الإنتظار',
+    'Closed'=>'تم الرد وإغلاق الطلب',
     'ticket_number'=>'رقم الطلب',
     'user_name'=>'صاحب الطلب',
     'help_type'=>'نوع الطلب',

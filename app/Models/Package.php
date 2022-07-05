@@ -14,7 +14,7 @@ class Package extends Model
 
     use HasTranslations;
     public $translatable = ['destination','person_num','package_desc','package_contain'
-    ,'conditions','cancel_conditions'];
+    ,'conditions','cancel_conditions','package_notinclude'];
 
     public function asJson($value)
     {
@@ -29,5 +29,10 @@ class Package extends Model
     public function Tripagents()
     {
       return $this->belongsToMany('App\Models\Tripagent','tripagent_package','package_id','tripagent_id');
+    }
+
+    public function ReturnPloicy()
+    {
+        return $this->belongsTo('App\Models\RetrunPloicy','ReturnPloicy_id');
     }
 }

@@ -9,10 +9,12 @@ use App\Http\Controllers\Admin\AttributeTypeController;
 use App\Http\Controllers\Admin\ServiceController;
 use App\Http\Controllers\Admin\AdsController;
 use App\Http\Controllers\Admin\AdsSlideShowController;
+use App\Http\Controllers\Admin\AgencyTypeController;
 use App\Http\Controllers\admin\CarTypeController;
 use App\Http\Controllers\Admin\CommonQuestions;
 use App\Http\Controllers\admin\ConsultationTypeController;
 use App\Http\Controllers\Admin\ContactUsController;
+use App\Http\Controllers\Admin\CountryController;
 use App\Http\Controllers\Admin\HelpController;
 use App\Http\Controllers\admin\MethodCommunicationController;
 use App\Http\Controllers\admin\OtherServiceController;
@@ -20,7 +22,9 @@ use App\Http\Controllers\Admin\TermConditionController;
 use App\Http\Controllers\admin\TimeCommunicationController;
 use App\Http\Controllers\Admin\UsagePolicyController;
 use App\Http\Controllers\Admin\CurrencyController;
+use App\Http\Controllers\Admin\DropDownlistsController;
 use App\Http\Controllers\Admin\PackageController;
+use App\Http\Controllers\Admin\RetrunPloicyController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -133,7 +137,14 @@ Route::group(
     Route::post('/updaterequesthelp_details',[HelpController::class,'updaterequesthelp_details'])->name('updaterequesthelp_details');
 
     
-    
+     //Reurn_Policy
+     Route::get('/retrunpolicy',[RetrunPloicyController::class,'index'])->name('retrunpolicy');
+     Route::post('/addpolicy',[RetrunPloicyController::class,'store'])->name('addpolicy');
+     Route::post('/delete_policy/{id}',[RetrunPloicyController::class,'destroy'])->name('delete_policy');
+     Route::get('/editpolicy/{id}',[RetrunPloicyController::class,'edit'])->name('editpolicy');
+     Route::post('/updatepolicy',[RetrunPloicyController::class,'update'])->name('updatepolicy');
+ 
+     
     
     Route::post('/addhelp',[HelpController::class,'store'])->name('addhelp');
     Route::get('/edithelp/{id}',[HelpController::class,'edit'])->name('edithelp');
@@ -218,6 +229,28 @@ Route::get('/edit_package/{id}',[PackageController::class,'edit'])->name('edit_p
 Route::post('/update_package',[PackageController::class,'update'])->name('update_package');
 
 
+//show_DropDownListList
+Route::get('/show_DropDownListList',[DropDownlistsController::class,'index'])->name('show_DropDownListList');
+Route::post('/addDropDownLists',[DropDownlistsController::class,'store'])->name('addDropDownLists');
+Route::get('/editDropDwonlist/{id}',[DropDownlistsController::class,'edit'])->name('editDropDwonlist');
+Route::post('/update_DropDownList',[DropDownlistsController::class,'update'])->name('update_DropDownList');
+Route::post('/delete_DropDownList/{id}',[DropDownlistsController::class,'destroy'])->name('delete_DropDownList');
+
+//show_ِAgenctType
+Route::get('/AgencyTypeList',[AgencyTypeController::class,'index'])->name('AgencyTypeList');
+ Route::post('/addAgencyType',[AgencyTypeController::class,'store'])->name('addAgencyType');
+Route::get('/editagency/{id}',[AgencyTypeController::class,'edit'])->name('editagency');
+ Route::post('/update_agency',[AgencyTypeController::class,'update'])->name('update_agency');
+ Route::post('/delete_AgenctType/{id}',[AgencyTypeController::class,'destroy'])->name('delete_AgenctType');
+
+ 
+
+//show_country
+Route::get('/Country_List',[CountryController::class,'index'])->name('Country_List');
+ Route::post('/addCountry',[CountryController::class,'store'])->name('addCountry');
+Route::get('/editCountry/{id}',[CountryController::class,'edit'])->name('editCountry');
+ Route::post('/update_country',[CountryController::class,'update'])->name('update_country');
+ Route::post('/delete_country/{id}',[CountryController::class,'destroy'])->name('delete_country');
 
 
 

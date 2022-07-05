@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\TermsCondtionsController;
+use App\Http\Controllers\Api\Tripagent\TripAgentAuthController;
 use App\Http\Controllers\Api\Users\BookingController;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
 use App\Http\Controllers\Api\Users\FaviourtTripagentController;
@@ -66,6 +67,9 @@ Route::group([
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
 
+
+   
+    
     Route::post('/resendotp', [AuthController::class, 'resendotp']);
     Route::post('/resetpassword', [AuthController::class, 'resetpassword']);
     Route::get('/user-profile', [AuthController::class, 'userProfile']);  
@@ -110,9 +114,14 @@ Route::group([
         //bookingform
         
         Route::get('/bookingform/{lang}/{Tripagent_id}/{Service_id}',[BookingController::class,'bookingform']);
+        Route::get('/Tourguide_Consultionform/{lang}/{Trouguide_id}',[BookingController::class,'Tourguide_Consultionform']);
+
+        
         Route::get('/quick_requestform/{lang}',[BookingController::class,'quick_requestform']);
 
         Route::post('/storebooking',[BookingController::class,'storebooking']);
+        Route::post('/storeconsultion_tourguiderequest',[BookingController::class,'storeconsultion_tourguiderequest']);
+
         Route::get('/getuser_bookingsdeatils/{lang}/{id}',[BookingController::class,'getuserbookings']);
         Route::get('/userbookings/{lang}/{id}',[BookingController::class,'userbookings']);
         Route::post('/package_filter/{lang}',[BookingController::class,'package_filter']);
@@ -127,11 +136,42 @@ Route::group([
 
     Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
     Route::get('/commonquestion/{lang}', [CommonQuestions::class, 'index']);
+    
+    // Route::group([
+    //     'prefix'=>'tripagent','namespace'=>'Tripagent'
+    // ],function(){
+    //     Route::post('/login', [TripAgentAuthController::class, 'login']);
+    // });
+
+
+
+    //TripAgent
+    Route::group([
+        'middleware' => ['api','CheckTripagentToken:tripagent-api'],
+        'prefix' => 'tripagent',
+    ], function ($router) {
+        Route::post('/logout',[TripAgentAuthController::class, 'logout'])->name('logout');
+        Route::get('/userprofile',[TripAgentAuthController::class, 'userprofile'])->name('userprofile');
+
+        
+    });
 
 });
 
+//Tripaentlogin
+route::group([
+    'middleware'=>'api',
+    'prefix' => 'tripagent',
+], function ($router) {
+    Route::post('/login', [TripAgentAuthController::class, 'login']);
+    Route::post('/register', [TripAgentAuthController::class, 'register']);
+    Route::post('/Activeuser',[TripAgentAuthController::class, 'Activeuser']);
 
-  
+    
+});
+ 
+
+ 
 
 
 

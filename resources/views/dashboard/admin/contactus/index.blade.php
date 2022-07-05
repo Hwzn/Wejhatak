@@ -53,7 +53,7 @@
                                     <td>{{ $loop->iteration  }}</td>
                                     <td>{{ $message->name }}</td>
                                     <td>{{ $message->phone }}</td>
-                                    <td>{!! $message->message !!}</td>
+                                    <td>{!! \Str::Limit($message->message,200) !!}</td>
                                     <td>{{ $message->created_at }}</td>
                                      <td>
                                      <a class="btn btn-info btn-sm" href="#" title="show message"

@@ -167,7 +167,13 @@ $("#addpackage_Modola  button,#editModolad_Package  button").click(function(e)
             cancelconditions_ar:$("#addpackage_Modola form textarea[name='cancelconditions_ar']").val(),
             cancelconditions_en:$("#addpackage_Modola form textarea[name='cancelconditions_en']").val(),
 
-           
+            notinclude_ar:$("#addpackage_Modola form textarea[name='notinclude_ar']").val(),
+            notinclude_en:$("#addpackage_Modola form textarea[name='notinclude_en']").val(),
+
+            policy_id:$("#addpackage_Modola form select[name='policy_id']").val(),
+
+            
+
           };
         //   console.log(data);
         //   return;
@@ -199,6 +205,11 @@ $("#addpackage_Modola  button,#editModolad_Package  button").click(function(e)
             cancelconditions_ar:$("#editModolad_Package form textarea[name='cancelconditions_ar']").val(),
             cancelconditions_en:$("#editModolad_Package form textarea[name='cancelconditions_en']").val(),
            
+            notinclude_ar:$("#editModolad_Package form textarea[name='notinclude_ar']").val(),
+            notinclude_en:$("#editModolad_Package form textarea[name='notinclude_en']").val(),
+     
+            policy_id:$("#editModolad_Package form select[name='policy_id']").val(),
+
             package_id:$("#editModolad_Package form input[name='package_id']").val(),
             status:$("#editModolad_Package form input[name='status']").prop('checked')?1:0
           };
@@ -262,6 +273,9 @@ var getHref = button.data('href'); //get button href
             $("#editModolad_Package form select[name='currencies_id']").val(data.currency_id);
             $("#editModolad_Package form select[name='currencies_id']").val(data.currency_id).change();
 
+            $("#editModolad_Package form textarea[name='notinclude_ar']").val(data.package_notinclude['ar']);
+            $("#editModolad_Package form textarea[name='notinclude_en']").val(data.package_notinclude['ar']);
+           
             if(data.status=="active")
             $("#editModolad_Package form input[name='status']").prop('checked',true);
             else

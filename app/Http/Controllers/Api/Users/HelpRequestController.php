@@ -54,12 +54,13 @@ class HelpRequestController extends Controller
                   $file=$request->file('photo');
                   $ext=$file->getClientOriginalExtension();
                   $filename=$rand_num.'.'.$ext;
-                  $file->move('public/assets/uploads/UserHelpRequests',$filename);
+                  $file->move('assets/uploads/UserHelpRequests',$filename);
                   $helpimage=$filename;
+
              }
          
              $user=HelpRequest::create([
-                 'ticket_num'=>$rand_num,
+                 'ticket_num'=>'#'.$rand_num,
                  'user_id'=>$request->user_id,
                  'help_id'=>$request->help_id,
                  'request_details'=>$request->request_details,

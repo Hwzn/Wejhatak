@@ -31,7 +31,8 @@ use App\Models\Package;
 use App\Models\PreferredMethodCommunication;
 use App\Models\PreferredTimeCommunication;
 use Illuminate\Validation\Rules;
-
+use Illuminate\Pagination\Paginator;
+use App\Support\Collection;
 class BookingController extends Controller
 {
     use ApiResponseTrait;
@@ -134,6 +135,48 @@ if($Service_id=='1')
    }
     }
 
+    //
+
+    public function Tourguide_Consultionform($lang,$Trouguide_id)
+    {
+  $url=request()->getHttpHost();
+   $data['Service_Attribute']=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['attributes'=>function($query) use($lang){
+      $query->select('attributes.id',"attributes.name->en as attribute_name",'service_attribute.order as order','attribute_types.name as attributetype_name')
+      ->join('attribute_types','attributes.attr_typeid', '=', 'attribute_types.id')
+      ->orderby('order','asc');
+   }])->where('id',7)->first();
+
+//pakcages
+
+                     
+   //Tourguide
+   $Tourguide=TourGuide::where('id',$Trouguide_id)
+                      ->select('id',"name->$lang as Tourguide_name",'photo',"desc->$lang as desc")
+                      ->first();
+   $data['Tourguide']['id']=$Tourguide->id;
+   $data['Tourguide']['name']=$Tourguide->Tripagent_name;
+   $data['Tourguide']['photo']="$url/assets/uploads/Profile/TourGuide/".$Tourguide->photo;
+   $data['Tourguide']['desc']=$Tourguide->desc;
+
+   $Service_Select=Serivce::select('serivces.id',"serivces.name->$lang as serivce_name")->with(['select_types'=>function($query3) use($lang){
+      $query3->select('select_types.id',"select_types.name->en as DropDownType","selecttype_elements.name->$lang as DropDownValue")
+        ->join('selecttype_elements','selecttype_elements.selecttype_id', '=', 'select_types.id');
+   }])->where('id',7)->first();
+
+   $data['DropDown_Lists']=collect($Service_Select->select_types)
+   ->groupBy('DropDownType')->toArray();
+   
+
+   if(!is_null($data)) 
+   {
+      return $this->apiResponse($data,'ok',200);
+   }   
+   else{
+      return $this->apiResponse('','No Data Found',404);
+
+   }
+    }
+    //
       public function quick_requestform($lang)
       {
          $url=request()->getHttpHost();
@@ -164,8 +207,6 @@ if($Service_id=='1')
       }
     public function storebooking(Request $request)
     {
-      
-      // return response()->json(['Requet'=>$request->service_id]);
       $validator=Validator::make($request->all(),[
          //'password' => Rules::when(request()->has('password'), ['required','min:6']),
          'service_id' => 'sometimes|required|exists:serivces,id',
@@ -185,20 +226,20 @@ if($Service_id=='1')
 
        else{
          $data=$request->all();
-        // return response()->json($data);
+      // return response()->json($data);
          $booking_attribute = array();    
         // $booking_attribute = array_map('utf8mb4_unicode_ci', $booking_attribute);
        foreach ($data as $key=>$value) {
-           if (strpos($key, "id") || strpos($key, "hild_data") || strpos($key, "raveller_data")) 
+           if (strpos($key, "id") || strpos($key, "hild_data") || strpos($key, "raveller_data") ) 
            {
                // $arr1[$key] = $value;
            } else {
                $booking_attribute[$key] = $value;
            }
        }
-     
+
     }
-       //   return response()->json($booking_attribute);
+         // return response()->json($booking_attribute);
      $package_id='';
        if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
      $tripagent_id='';
@@ -208,11 +249,14 @@ if($Service_id=='1')
             'User_id'=>$data['user_id'],
             'Service_id'=>$data['service_id'],
             'Tripagent_id'=>$tripagent_id,
-           
             'Package_id'=>$package_id,
             'booking_details'=>json_encode($booking_attribute,JSON_UNESCAPED_UNICODE),
          );
          $booking_store=Booking::create($booking);
+        // $est=$data['child_data'];
+         // $array=explode(' ',$est[1]);
+        // return response()->json(json_decode($data['child_data']));
+
          if($booking_store)
          {
             $booking=Booking::select('id')->where('User_id',102)->latest('id')->first();
@@ -257,7 +301,69 @@ if($Service_id=='1')
        }
      
     
+////
 
+public function storeconsultion_tourguiderequest(Request $request)
+{
+  $validator=Validator::make($request->all(),[
+     //'password' => Rules::when(request()->has('password'), ['required','min:6']),
+     'service_id' => 'sometimes|required|exists:serivces,id',
+     'Tripagent_id' => 'sometimes|required|exists:trip_agents,id',
+     // '10' => 'sometimes|required',
+     // '11' => 'sometimes|required',
+     // '12' => 'sometimes|required',
+     // '13' => 'sometimes|required',
+     // '14' => 'sometimes|required',
+  ]);
+
+ 
+  if($validator->fails())
+  {
+     return response()->json($validator->errors(), 400);
+   }
+
+   else{
+     $data=$request->all();
+// return response()->json($data);
+     $booking_attribute = array();    
+    // $booking_attribute = array_map('utf8mb4_unicode_ci', $booking_attribute);
+   foreach ($data as $key=>$value) {
+       if (strpos($key, "id") || strpos($key, "hild_data") || strpos($key, "raveller_data") ) 
+       {
+           // $arr1[$key] = $value;
+       } else {
+           $booking_attribute[$key] = $value;
+       }
+   }
+
+}
+     // return response()->json($booking_attribute);
+ $package_id=null;
+ $tripagent_id=null;
+
+     $booking=array(
+        'User_id'=>$data['user_id'],
+        'Service_id'=>7,
+        'Tripagent_id'=>$tripagent_id,
+        'Tourguide_id'=>$data['Tourguide_id'],
+        'Package_id'=>$package_id,
+        'booking_details'=>json_encode($booking_attribute,JSON_UNESCAPED_UNICODE),
+     );
+     $booking_store=Booking::create($booking);
+     if($booking_store)
+     {
+        return $this->apiResponse($booking_store,'data saved succefuly',200);
+     }
+
+     else{
+        return $this->apiResponse('','Fails',400);
+
+     }
+   }
+ 
+
+
+       
     public function getuserbookings($lang,$id)
     {
       $HostName=request()->getHttpHost();
@@ -320,8 +426,11 @@ if($Service_id=='1')
     $lang=strtolower($lang);
        if(Booking::where('User_id',$id)->exists())
        {
-         $data['booking']=Booking::where('User_id',$id)->get();
+         $data['booking']=Booking::where('User_id',$id)
+         ->get();
+     //   return response()->json($data['booking']);
         $booking=[];
+
            foreach($data['booking'] as $data)
            {
               $booking[$data->id]['booking_id']=$data->id;
@@ -341,6 +450,14 @@ if($Service_id=='1')
                $booking[$data->id]['Tripagent_name']=$Tripagent->name;
                $booking[$data->id]['Tripagent_photo']="$HostName/public/assets/uploads/Profile/TripAgent/".$Tripagent->photo;
               }
+              elseif(!$data->Tourguide_id==Null)
+              {
+               $Tourguide=TourGuide::select('id',"name",'photo')->where('id',$data->Tourguide_id)->first();
+               $booking[$data->id]['Tourguide_id']=$Tourguide->id;
+               $booking[$data->id]['Tourguide_name']=$Tourguide->name;
+               $booking[$data->id]['Tourguide_photo']="$HostName/public/assets/uploads/Profile/TourGuide/".$Tourguide->photo;
+              }
+
               else
               {
                $booking[$data->id]['Tripagent_name']='Admin';
@@ -366,7 +483,8 @@ if($Service_id=='1')
 
               
            }
-           return $this->apiResponse($booking,'ok',200);
+          $results = (new Collection($booking))->paginate(5);
+                    return $this->apiResponse($results,'ok',200);
 
        }
        else{
@@ -419,6 +537,19 @@ if($Service_id=='1')
             if($fromprice!=='all' && $toprice!=='all')
             {
                $query->where("packages.price",'>=',$fromprice)
+                     ->where("packages.price",'<=',$toprice);
+
+            }
+            if($fromprice!=='all' && $toprice =='all')
+            {
+               $query->where("packages.price",'>=',$fromprice)
+                     ->where("packages.price",'<=',$fromprice);
+
+            }
+            
+            if($fromprice =='all' && $toprice !=='all')
+            {
+               $query->where("packages.price",'>=',0)
                      ->where("packages.price",'<=',$toprice);
 
             }

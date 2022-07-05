@@ -1,5 +1,8 @@
 <?php
 namespace App\Http\Services;
+
+use App\Models\Tripagent;
+use App\Models\Tripagent_verfication;
 use App\Models\User_verfication;
 use App\Models\User;
 use Carbon\Carbon;
@@ -119,6 +122,78 @@ class SMSServices
             }
         }
         
+
+        //Tripagent sms
+
+        public function setTripagent_VerficationCode($data)
+        {
+            $today=Carbon::now();
+            $otpcode=mt_rand(1000,9999);
+            $data['otpcode']=$otpcode;
+            Tripagent_verfication::where(['user_id'=>$data['user_id']])->delete();
+            // return User_verfication::create($data);
+            return Tripagent_verfication::create([
+                'user_id'=>$data['user_id'],
+                'otpcode'=>$data['otpcode'],
+                'expired_at'=>$today->addMinutes(05),
+            ]);
+    
+            //هيبقي جيلك من $data>>user_id,oto_code
+        }
+    
+        public function checkOtpCode_Trpagent($code,$user_id)
+        {
+            // if(Auth::guard()->check())
+            // {
+                $verificationdata=Tripagent_verfication::where('user_id',$user_id)->first();
+               if($verificationdata->otpcode==$code)
+               {
+                     $expiredate=$verificationdata->expired_at;
+                     $datenow=Carbon::now();
+                    if($expiredate>$datenow)
+                    {
+                        Tripagent::where('id',$user_id)->update([
+                            'verified_at'=>now(),
+                        ]);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+    
+                    }
+                   
+                       
+               }
+               else
+               {
+                   return false;
+               }
+            // }
+            
+        }
+    
+       public function removeOtpCode_Tripagent($code)
+        {
+            Tripagent_verfication::where('otpcode',$code)->delete();
+            
+        }
+    
+      
+    
+        public function resetpassword_Tripagent($code)
+        {
+            $verificationdata=Tripagent_verfication::where('otpcode',$code)->first();
+               if($verificationdata)
+               {
+                  
+                   return true;
+               }
+               else
+               {
+                   return false;
+               }
+            }
     }
 
   

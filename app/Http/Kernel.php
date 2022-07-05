@@ -71,6 +71,9 @@ class Kernel extends HttpKernel
         'verifyusercode' => \App\Http\Middleware\VerifyCode::class,
         'jwt.verified' => \App\Http\Middleware\JwtMiddleware::class,
         'Customjwt.verified' => \App\Http\Middleware\CustomJwtMiddleware::class,
+        'CheckTripagentToken' => \App\Http\Middleware\CheckTripagentToken::class,
+         'auth.guard' => \App\Http\Middleware\AssignGuard::class,
+
         
     ];
 }

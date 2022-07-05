@@ -31,6 +31,10 @@ return [
     'cancel_conditions_ar'=>'شروط الإلغاء بالعربية',
     'cancel_conditions_en'=>'شروط الإلغاء بالانجليزية',
 
+    'Package_notinclude_ar'=>'الباقة لاتشمل بالعربية',
+    'Package_notinclude_en'=>'الباقة لاتشمل بالانجليزية',
+
+    'ploicy_conditions'=>'سياسة الترجيع والاستبدال',
     'Close'=>'أغلاق',
     'submit'=>'حفظ',
    

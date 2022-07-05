@@ -27,6 +27,10 @@ class CreatePackagesTable extends Migration
             $table->text('package_contain')->nullable();
             $table->text('conditions')->nullable();
             $table->text('cancel_conditions')->nullable();
+            $table->text('package_notinclude')->nullable();
+            $table->foreignId('ReturnPloicy_id')->references('id')->on('retrun_ploicies')
+              ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->enum('status',['active','notactive'])->default('active');
             $table->timestamps();
         });

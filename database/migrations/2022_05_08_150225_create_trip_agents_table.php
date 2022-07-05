@@ -16,6 +16,7 @@ class CreateTripagentsTable extends Migration
         Schema::create('trip_agents', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+          
             $table->string('phone')->unique();
             $table->timestamp('verified_at')->nullable();
             $table->string('password');
@@ -27,6 +28,17 @@ class CreateTripagentsTable extends Migration
             $table->string('profile_photo')->nullable();
             $table->text('desc')->nullable();
             $table->timestamps();
+            $table->foreignId('agency_id')->references('id')->on('agency_types')
+            ->onUpdate('CasCade');
+            $table->text('countries')->nullable();
+            $table->string('commercial_registrationNo')->nullable();
+            $table->date('commercialregistration_expiryDate')->nullable();
+            $table->string('license_number',191)->nullable();
+            $table->date('license_expiry_date')->nullable();
+
+            
+
+            
         });
     }
 
