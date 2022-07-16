@@ -27,7 +27,8 @@ class Tripagent extends Authenticatable implements JWTSubject
       'CommercialRegistration_ExpiryDate',
       'license_number',
       'license_expiry_date',
-      'Countries'
+      'Countries',
+      'status',
 
   ];
     protected $hidden=['pivot'];
@@ -56,4 +57,14 @@ class Tripagent extends Authenticatable implements JWTSubject
     {
       return $this->belongsToMany('App\Models\Package','tripagent_package','tripagent_id','package_id');
     }
+
+    public function DeviceTokens()
+    {
+        return $this->hasMany('App\Models\DeviceToken');
+    }
+
+    // public function Notifications()
+    // {
+    //     return $this->belongsToMany('App\Models\UserNotification','user_notifications');
+    // }
 }

@@ -33,7 +33,7 @@ class CreateBookingsTable extends Migration
             ->onUpdate('cascade');
             $table->text('booking_details');
             $table->string('booking_file')->nullable();
-            $table->enum('status',['pending','completed','refused'])->default('pending');
+            $table->enum('status',['pending','accepted','completed','refused'])->default('pending');
             $table->softDeletes();
             $table->timestamps();
         });

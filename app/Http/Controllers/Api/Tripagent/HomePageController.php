@@ -1,0 +1,116 @@
+<?php
+
+namespace App\Http\Controllers\Api\Tripagent;
+
+use App\Http\Controllers\Controller;
+use App\Models\Tripagent;
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Api\Traits\ApiResponseTrait;
+use App\Models\Booking;
+use App\Models\CountryStatistics;
+use App\Models\Package;
+use App\Models\TripagentsService;
+use App\Models\TripagentStatistic;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
+class HomePageController extends Controller
+{
+    use ApiResponseTrait;
+
+    public function index($lang)
+    {
+//       $start = new Carbon();
+//       $start->startOfMonth();
+//       $start->endOfMonth();
+
+// return response($start);
+      $lang=strtolower($lang);
+        $user_id=Auth::user()->id;
+        $data1=Tripagent::select('id',"name as TripAgent_name",'photo','starnumber','profile_photo')
+        ->with(['Services'=>function($query) use($lang){
+       $query->select('serivces.id',"name->$lang as service_name",'photo','tripagent_service.status as service_status')
+              ->where('serivces.status','active')
+              ->orderby('serivces.id','asc');
+    }])->find($user_id);
+    // return response()->json($data);
+    //Service_Count
+    //get 
+    $TripagentStatistic=TripagentStatistic::select('id','tripagent_id')
+    ->orderby('requests_count','DESC')->get()->toarray();
+    foreach($TripagentStatistic as $key=>$value)
+    {
+    $tripagentlogid[]=Auth::user()->id;
+    if(in_array($value['tripagent_id'],$tripagentlogid))
+    {
+      $data['TripagentStatistic_order']=$key+1;
+    }
+    }
+
+    // countriesStatistic
+    $data['countriesStatistic']=CountryStatistics::select('country_statistics.id','country_id',"name->$lang as country_name",'requests_number','country_statistics.created_at','country_statistics.updated_at')
+                          ->join('countries','countries.id','country_statistics.country_id')
+                          ->whereMonth('country_statistics.created_at',date('m'))
+                          ->whereYear('country_statistics.created_at',date('Y'))
+                          ->orderby('requests_number','desc')
+                          ->take(7)->get();
+   $data['Max_valuecountriesStatis']=CountryStatistics::select('requests_number')
+                          ->whereMonth('country_statistics.created_at',date('m'))
+                          ->whereYear('country_statistics.created_at',date('Y'))
+                          ->orderby('requests_number','desc')
+                          ->take(1)->get();
+   $data['Min_valuecountriesStatis']=CountryStatistics::select('requests_number')
+                          ->whereMonth('country_statistics.created_at',date('m'))
+                          ->whereYear('country_statistics.created_at',date('Y'))
+                          ->orderby('requests_number','asc')
+                          ->take(1)->get();
+      //  return response()->json($countriesStatistic);
+    //
+    $data['services_count']=TripagentsService::where('tripagent_id',$user_id)->count();
+    $HostName=request()->getHttpHost();
+    $data['services']=array();
+    $data['requests']=array();
+
+   
+
+    foreach($data1->Services as $Service)
+    {
+          $array['service_id']=$Service->id;
+          $array['service_name']=$Service->service_name;
+         if($lang=='en') 
+            $array['status']=$Service->service_status=='active'?trans('Service_trans.active',[],'en'):trans('Service_trans.not_active',[],'en');
+         else
+            $array['status']=$Service->service_status=='active'?trans('Service_trans.active',[],'ar'):trans('Service_trans.not_active',[],'ar');
+            array_push($data['services'],$array);
+
+            $req['Serive_id']=$Service->id;
+            $req['Serive_name']=$Service->service_name;
+            $req['requests_count']=Booking::where('Tripagent_id',$user_id)->where('Service_id',$Service->id)->count();
+            array_push($data['requests'],$req);
+        
+    }
+
+    $data['Top_PackagePrice']=Package::select('packages.id',"countries.name->$lang as country",'price')
+                              ->join('countries','countries.id','=','packages.country_id')
+                              ->where('tripagent_id',$user_id)->orderby('price','desc')->first();
+     $data['Low_PackagePrice']=Package::select('packages.id',"countries.name->$lang as country",'price')
+                               ->join('countries','countries.id','=','packages.country_id')
+                               ->where('tripagent_id',$user_id)->orderby('price','asc')->first();
+     
+    
+ 
+
+  
+     if($data)      
+     {
+      return $this->apiResponse($data,'ok',200);
+     }
+     else
+     {
+        return $this->apiResponse("",'No Data Found',404);
+     }
+    }
+
+   }

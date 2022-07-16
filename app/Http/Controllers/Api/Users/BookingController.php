@@ -33,9 +33,16 @@ use App\Models\PreferredTimeCommunication;
 use Illuminate\Validation\Rules;
 use Illuminate\Pagination\Paginator;
 use App\Support\Collection;
+
+use App\Http\Controllers\Api\Traits\SendNotificationsTrait;
+use App\Models\Country;
+use App\Models\CountryStatistics;
+use App\Models\DeviceToken;
+use Illuminate\Support\Carbon;
 class BookingController extends Controller
 {
     use ApiResponseTrait;
+    use SendNotificationsTrait;
 
     public function showall_attribute($lang)
     {
@@ -226,7 +233,7 @@ if($Service_id=='1')
 
        else{
          $data=$request->all();
-      // return response()->json($data);
+      //return response()->json($data);
          $booking_attribute = array();    
         // $booking_attribute = array_map('utf8mb4_unicode_ci', $booking_attribute);
        foreach ($data as $key=>$value) {
@@ -240,10 +247,60 @@ if($Service_id=='1')
 
     }
          // return response()->json($booking_attribute);
+      
      $package_id='';
-       if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
-     $tripagent_id='';
+     //  if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
+       if(!empty($data['packaged_id'])) 
+       {
+          $package_id=$data['packaged_id'];
+         // return response(Carbon::today()->toDateString());16-07-2022
+         //    return response(date('m'));07
+          //   return response(date('Y'));2002
+
+          $country=Package::select('country_id')->where('id',$package_id)->first();
+          $country_id=$country->country_id;
+
+          if(CountryStatistics::where('country_id',$country_id)
+          ->whereMonth('created_at',date('m'))
+          ->whereYear('created_at',date('Y'))->exists())
+          {
+            $country_statiistics=CountryStatistics::where('country_id',$country_id)
+            ->whereMonth('created_at',date('m'))
+            ->whereYear('created_at',date('Y'))->first();
+            $country_statiistics->update([
+               'requests_number'=>$country_statiistics->requests_number+1,
+            ]);
+          }
+          else
+          {
+            $country_statiistics=['country_id'=>$country_id,'requests_number'=>1];
+            CountryStatistics::create($country_statiistics);
+
+          }
+             return response('fffff');
+       }  
+       else
+       {
+          $package_id=Null;
+       } 
+       $tripagent_id='';
      if(!empty($data['tripagent_id']))  $tripagent_id=$data['tripagent_id']; else $tripagent_id=Null;
+   if(!empty($data['tripagent_id'])) 
+   {
+      $tripagent_id=$data['tripagent_id'];
+   }  
+   else
+   {
+      $tripagent_id=Null;
+   } 
+
+   //  $service=Serivce::select('id','name')->where('id',$data['service_id'])->first();
+    $service=Serivce::select('name')->where('id',$data['service_id'])->first()->toarray();
+    //$service_name=$service[0];
+   // return response()->json($service['name']);
+    $service_ar=$service['name']['ar'];
+    $service_en=$service['name']['en'];
+   // return response()->json($service_ar);
 
          $booking=array(
             'User_id'=>$data['user_id'],
@@ -259,7 +316,7 @@ if($Service_id=='1')
 
          if($booking_store)
          {
-            $booking=Booking::select('id')->where('User_id',102)->latest('id')->first();
+            $booking=Booking::select('id')->where('User_id',$data['user_id'])->latest('id')->first();
               if(isset($data['child_data']))
                {
 
@@ -291,16 +348,37 @@ if($Service_id=='1')
                      
                   }  
                }
+
+             //notficaions
+             if($tripagent_id !==Null)
+             {
+                //send notifucation for tripagent
+                $user_name=Auth::user()->name;
+                $user_tokens=DeviceToken::where('tripagent_id',$tripagent_id)->pluck('token')->toarray();
+                $noification_title="Booking Reuest notification";
+                $notification_body=$user_name .' '.' Send Booking Request  Number '.'#'.$booking->id ;
+                // return response()->json($notification_body);
+                $message_content=[
+                   'en'=>$user_name .' '.' Send '.$service_en. ' with booking number '.'#'.$booking->id,
+                  //  'ar'=>'تم ارسال طلب ' . $service_name . 'من ' . $user_name . 'برقم # ' . $booking->id
+                   'ar'=>"تم ارسال طلب  $service_ar  من  $user_name برقم #$booking->id"
+                  ];
+               $this->sendnotification(null,$request->tripagent_id,$noification_title,$notification_body,$user_tokens,$message_content);
+                   //sendnotifaction for admin
+                  
+             }
+ 
+            
             return $this->apiResponse($booking_store,'data saved succefuly',200);
-         }
+           
+          
+           
+          }
+           
 
-         else{
-            return $this->apiResponse('','Fails',400);
+          }
+      
 
-         }
-       }
-     
-    
 ////
 
 public function storeconsultion_tourguiderequest(Request $request)
@@ -420,8 +498,9 @@ public function storeconsultion_tourguiderequest(Request $request)
       }
     }
     
-    public function userbookings($lang,$id)
+    public function userbookings($lang,$id,$page)
     {
+     
       $HostName=request()->getHttpHost();
     $lang=strtolower($lang);
        if(Booking::where('User_id',$id)->exists())
@@ -483,8 +562,15 @@ public function storeconsultion_tourguiderequest(Request $request)
 
               
            }
-          $results = (new Collection($booking))->paginate(5);
-                    return $this->apiResponse($results,'ok',200);
+          $results = (new Collection($booking))->paginate(10,0,$page);
+          if(!empty($results->count()>0))  
+          {
+            return $this->apiResponse($results,'ok',200);
+          }    
+          else{
+            return $this->apiResponse("",'Thepervious page  is Last Page',200);
+
+          }  
 
        }
        else{

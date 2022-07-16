@@ -22,7 +22,8 @@ class CreateTripagentServiceTable extends Migration
              $table->foreignId('tripagent_id')->references('id')->on('trip_agents')
              ->onDelete('cascade')
              ->onUpdate('cascade');
- 
+             
+             $table->enum('status',['active','not_active'])->default('active');
             $table->timestamps();
         });
     }

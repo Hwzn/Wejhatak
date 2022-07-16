@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserNotificationsTable extends Migration
+class CreateDeviceTokenTripagentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,12 @@ class CreateUserNotificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_notifications', function (Blueprint $table) {
+        Schema::create('device_token_tripagents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->references('id')->on('users')
             ->onDelete('cascade')
-            ->onUpdate('cascade')
-            ->nullable();
-            $table->foreignId('tripagent_id')->references('id')->on('trip_agents')
-            ->onDelete('cascade')
-            ->onUpdate('cascade')
-            ->nullable();
-            $table->string('title',400);
-            $table->text('body');
-            $table->dateTime('expired_at');
+            ->onUpdate('cascade');
+            $table->text('token');
             $table->timestamps();
         });
     }
@@ -37,6 +30,6 @@ class CreateUserNotificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_notifications');
+        Schema::dropIfExists('device_token_tripagents');
     }
 }

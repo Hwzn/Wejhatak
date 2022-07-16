@@ -35,6 +35,7 @@ class CreateTripagentsTable extends Migration
             $table->date('commercialregistration_expiryDate')->nullable();
             $table->string('license_number',191)->nullable();
             $table->date('license_expiry_date')->nullable();
+            $table->enum('status',['active','not_active'])->default('not_active');
 
             
 

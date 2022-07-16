@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Admin\Traits;
+namespace App\Http\Controllers\Api\Traits;
 use Carbon\Carbon;
 use App\Models\UserNotification;
 trait  SendNotificationsTrait

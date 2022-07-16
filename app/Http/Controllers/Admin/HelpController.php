@@ -142,10 +142,11 @@ class HelpController extends Controller
           'status'=>'closed'
         ]);
   
-      
+        $message_content=['en'=>'Your Request Number '.$request->ticket_num .' has been update','ar'=>'طلب المساعدة الخاص بكم رقم  '.$request->ticket_num .'تم الرد عليه من قبل الادمن'];
+
         if(!is_null($data))
         {
-           $this->sendnotification($request->user_id,$noification_title,$notification_body,$user_tokens);
+           $this->sendnotification($request->user_id,null,$noification_title,$notification_body,$user_tokens,$message_content);
           //  $this->store_notification($request->user_id,$noification_title,$notification_body);
 
            toastr()->success(trans('messages_trans.success'));

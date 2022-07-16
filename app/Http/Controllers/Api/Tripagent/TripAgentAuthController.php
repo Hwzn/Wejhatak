@@ -31,6 +31,7 @@ class TripAgentAuthController extends Controller
             $rules=[
                 "phone"=>'required|exists:trip_agents,phone',
                 'password'=>'required',
+                'device_token'=>'required',
             ];
               $validator=Validator::make($request->all(),$rules);
               if($validator->fails())
@@ -42,11 +43,26 @@ class TripAgentAuthController extends Controller
             $credantionals=$request->only(['phone','password']);
             $token=Auth::guard('tripagent-api')->attempt($credantionals);
             if(!$token)
-                return response()->json(['error' => 'Unauthorized'], 401);
+                return response()->json(['error' => 'invalid username or password'], 401);
 
             $tripagent=Auth::guard('tripagent-api')->user();
+          if($tripagent->verified_at==Null)
+           {
+            return response()->json(['error' => 'User Not Activated'], 401);
+           }
             $tripagent->api_token=$token;
             $tripagent->expires_in= auth()->factory()->getTTL() * 60;
+
+        //send device token
+            $exists=$tripagent->DeviceTokens()
+            ->where('token','=',$request->device_token)->exists();
+            if(!$exists)
+            {
+                $tripagent->DeviceTokens()->create([
+                    'token'=>$request->device_token,
+                ]);
+            } 
+         //send device token
             return response()->json(['User_data' => $tripagent], 200);
 
         }
@@ -91,8 +107,7 @@ class TripAgentAuthController extends Controller
 
     public function register(Request $request)
     {
-       // $aaa=json_encode($request->countries);
-       // return response()->json($aaa);
+    //   $aaa=['a'=>1,'b'=>2];
         $rules=[
             'name' => 'required|string|max:255',
             'phone' => 'required|string',
@@ -216,6 +231,102 @@ class TripAgentAuthController extends Controller
                 'message' => 'user activeted',
             ], 201);
         }
+
+    }
+
+    public function resendotp(Request $request)
+    {
+
+        $data = Validator::make($request->all(), [
+            'phone' => 'required|exists:trip_agents',
+        ]);
+        if($data->fails()){
+            return response()->json($data->errors()->toJson(), 400);
+        }
+    try 
+        {
+            DB::beginTransaction(); 
+      
+        $user=Tripagent::where('phone',$request->phone)->first();
+        $user->update([
+            'verified_at'=>Null
+        ]);
+
+        $uservervifaction=Tripagent_verfication::where('user_id',$user->id)->delete();
+
+        //resend otp
+                $verfication=[];
+                $verfication['user_id']=$user->id;
+                $verfication_data=$this->sms_sevices->setTripagent_VerficationCode($verfication);
+
+                //sendsms
+                $message= $this->sms_sevices->getSMSVerifyMessageByAppName($verfication_data->otpcode);
+                $sms2=$this->sms_sevices->sendSms($user->phone,$message);
+         //resend otp
+
+              DB::commit();
+            return response()->json([
+            'message' => 'User successfully ResendOtp',
+            'user' => $user
+        ], 201);
+            }
+            catch(\Exception $ex){
+                DB::rollBack();
+                return response()->json([
+                    'message' => $ex,
+                    'user' => ''
+                ], 404);
+            }
+     
+
+
+    }
+    
+
+    public function resetpassword(Request $request)
+    {
+        $data = Validator::make($request->all(), [
+            'otpcode' => 'required|exists:tripagent_verfications',
+            'phone' => 'required|exists:trip_agents',
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+        if($data->fails()){
+            return response()->json($data->errors()->toJson(), 400);
+        }
+        
+    try 
+        {
+            DB::beginTransaction(); 
+                $user=DB::table('trip_agents')->where('phone',$request->phone)
+                     ->update([
+                    'password'=>bcrypt($request->password),
+                    'verified_at'=>now(),
+                ]);
+                if($user)
+                {
+                    $userid=Tripagent::where('phone',$request->phone)->select('id')->first();
+                    $otp=$request->otpcode;
+                    $uservervifaction=Tripagent_verfication::where(function($query) use($otp,$userid){
+                            $query->wherein('user_id',$userid)
+                                   ->where('otpcode',$otp);
+                    })->delete();
+                }
+                DB::commit();
+                return response()->json([
+                    'message' => 'User successfully RestPassword',
+                    'user' => $user
+                ], 201);
+           
+            }
+            catch(\Exception $ex)
+            {
+                DB::rollBack();
+                return response()->json([
+                    'message' => $ex,
+                    'user' => 'd'
+                ], 404);
+            }
+     
 
     }
 

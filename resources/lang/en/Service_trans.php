@@ -18,6 +18,7 @@ return [
     'Delete'=>'Delete',
     'Cancel'=>'Cancel',
     'Message_Delete'=>'Data Deleted Successfuly',
-
+    'active'=>'active',
+    'not_active'=>'not_active',
 
 ];

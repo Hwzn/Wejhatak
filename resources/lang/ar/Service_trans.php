@@ -18,6 +18,8 @@ return [
     'Delete'=>'حذف',
     'Cancel'=>'الغاء',
     'Message_Delete'=>'تم حذف الخدمه بنجاح',
+    'active'=>'مفعل',
+    'not_active'=>'غير مفعل',
 
 
 ];

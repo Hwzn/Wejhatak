@@ -27,6 +27,7 @@ use App\Models\CarType;
 use App\Models\UserNotification;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
+use App\Support\Collection;
 
 use Carbon\Carbon;
 
@@ -162,6 +163,7 @@ public function resetpassword(Request $request)
        $tripagents=Tripagent::select('id',"name->$lang as Tripagent_Name",'photo','starnumber','profile_photo')
                           ->where('type','Tourism_Company')
                           ->where('verified_at',"!=",Null)
+                          ->where('status','active')
         ->orderby('id','desc')->take(4)->get();
     
   
@@ -686,24 +688,36 @@ public function resetpassword(Request $request)
    }
   }
   
-  public function shownotification($userid)
+  public function shownotification($userid,$lang,$page)
   {
+   $lang=strtolower($lang);
    $today=Carbon::now();
    $oldnotification=UserNotification::where('user_id',$userid)
    ->where('expired_at','<=',$today)  
    ->delete();
 
-   $user_notificaion=UserNotification::where('user_id',$userid)
-    ->where('expired_at','>=',$today)  
-    ->get();
+   $results=UserNotification::select('id','user_id','title',"body->$lang as message_content",'expired_at')
+      ->where('user_id',$userid)
+       ->where('expired_at','>=',$today)  
+     ->get();
 
-     if($user_notificaion->count()>0)
+     $user_notificaion = (new Collection($results))->paginate(10,0,$page);
+     if(!empty($user_notificaion->count()>0))  
      {
-     return $this->apiResponse($user_notificaion,'ok',200);
-   }
-   else{
-    return $this->apiResponse('','No User Found',404);
+       return $this->apiResponse($results,'ok',200);
+     }    
+      else{
+    return $this->apiResponse('','No notificaion found',404);
 
    }
+   //   else{
+   //     return $this->apiResponse("",'Thepervious page  is Last Page',200);
+
+   //   }  
+   //   if($user_notificaion->count()>0)
+   //   {
+   //   return $this->apiResponse($user_notificaion,'ok',200);
+   // }
+  
   }
 }

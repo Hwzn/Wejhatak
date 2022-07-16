@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\TermsCondtionsController;
+use App\Http\Controllers\Api\Tripagent\HomePageController;
+use App\Http\Controllers\Api\Tripagent\PackageController;
+use App\Http\Controllers\Api\Tripagent\ProfileController;
+use App\Http\Controllers\Api\Tripagent\ServiceController;
 use App\Http\Controllers\Api\Tripagent\TripAgentAuthController;
 use App\Http\Controllers\Api\Users\BookingController;
 use App\Http\Controllers\Api\Users\ContactUscontroller;
@@ -123,7 +127,7 @@ Route::group([
         Route::post('/storeconsultion_tourguiderequest',[BookingController::class,'storeconsultion_tourguiderequest']);
 
         Route::get('/getuser_bookingsdeatils/{lang}/{id}',[BookingController::class,'getuserbookings']);
-        Route::get('/userbookings/{lang}/{id}',[BookingController::class,'userbookings']);
+        Route::get('/userbookings/{lang}/{id}/{page}',[BookingController::class,'userbookings']);
         Route::post('/package_filter/{lang}',[BookingController::class,'package_filter']);
 
         
@@ -131,7 +135,7 @@ Route::group([
         Route::get('/showall_attribute/{lang}',[BookingController::class,'showall_attribute']);
 
         //user notification
-        Route::get('/show_notification/{userid}',[UserController::class,'shownotification']);
+        Route::get('/show_notification/{userid}/{lang}/{page}',[UserController::class,'shownotification']);
     });
 
     Route::get('/aboutus/{lang}', [AboutUsController::class, 'index']);
@@ -152,8 +156,27 @@ Route::group([
     ], function ($router) {
         Route::post('/logout',[TripAgentAuthController::class, 'logout'])->name('logout');
         Route::get('/userprofile',[TripAgentAuthController::class, 'userprofile'])->name('userprofile');
+        Route::get('/myservices/{lang}',[ServiceController::class, 'myservices']);
+        Route::get('/Services_List/{lang}',[ServiceController::class, 'Services_List']);
+        Route::post('/Add_Service',[ServiceController::class, 'Add_Service']);
+        Route::post('/changestatus',[ServiceController::class, 'changeservice_status']);
+        Route::post('/deleteservice',[ServiceController::class, 'deleteservice']);
 
-        
+
+        //userprofile
+        Route::post('/resetpassword',[ProfileController::class, 'resetpassword']);
+       //homepage
+       Route::get('/HomePage/{lang}',[HomePageController::class, 'index']);
+       Route::get('/shownotification/{lang}/{page}',[ProfileController::class, 'shownotification']);
+
+       //Packages
+       Route::get('/package_form',[PackageController::class,'package_form']);
+       Route::post('/addpackage',[PackageController::class,'addpackage']);
+       Route::post('/changepackage_status',[PackageController::class,'change_status']);
+       Route::get('/editpackage/{id}',[PackageController::class,'edit']);
+       Route::post('/updatepackage/{id}',[PackageController::class,'update']);
+
+       
     });
 
 });
@@ -166,7 +189,10 @@ route::group([
     Route::post('/login', [TripAgentAuthController::class, 'login']);
     Route::post('/register', [TripAgentAuthController::class, 'register']);
     Route::post('/Activeuser',[TripAgentAuthController::class, 'Activeuser']);
+    Route::post('/resetpassword',[TripAgentAuthController::class, 'resetpassword']);
+    Route::post('/resendotp',[TripAgentAuthController::class, 'resendotp']);
 
+    
     
 });
  

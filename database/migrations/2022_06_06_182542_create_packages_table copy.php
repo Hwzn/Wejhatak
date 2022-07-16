@@ -15,9 +15,7 @@ class CreatePackagesTable extends Migration
     {
         Schema::create('packages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')->references('id')->on('countries')
-            ->onDelete('cascade')
-            ->onUpdate('cascade');
+            $table->string('destination',191);
             $table->foreignId('tripagent_id')->references('id')->on('trip_agents')
             ->onDelete('cascade')
             ->onUpdate('cascade')

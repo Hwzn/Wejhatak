@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDeviceTokensTable extends Migration
+class CreateTripagentStatisticsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,12 @@ class CreateDeviceTokensTable extends Migration
      */
     public function up()
     {
-        Schema::create('device_tokens', function (Blueprint $table) {
+        Schema::create('tripagent_statistics', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->references('id')->on('users')
-            ->onDelete('cascade')
-            ->onUpdate('cascade')
-            ->nullable();
             $table->foreignId('tripagent_id')->references('id')->on('trip_agents')
-            ->onDelete('cascade')
-            ->onUpdate('cascade')
-            ->nullable();
-            $table->text('token');
+            ->onDelete('CasCade')
+            ->onUpdate('CasCade');
+            $table->integer('requests_count');
             $table->timestamps();
         });
     }
@@ -35,6 +30,6 @@ class CreateDeviceTokensTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('device_tokens');
+        Schema::dropIfExists('tripagent_statistics');
     }
 }

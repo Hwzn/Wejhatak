@@ -13,8 +13,8 @@ class Package extends Model
     protected $hidden=['pivot'];
 
     use HasTranslations;
-    public $translatable = ['destination','person_num','package_desc','package_contain'
-    ,'conditions','cancel_conditions','package_notinclude'];
+    public $translatable = ['package_desc','package_contain'
+    ,'conditions','cancel_conditions','package_notinclude','ReturnPloicy'];
 
     public function asJson($value)
     {

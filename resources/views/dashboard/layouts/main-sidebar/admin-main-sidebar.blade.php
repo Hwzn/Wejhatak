@@ -148,6 +148,20 @@
                         </ul>
                     </li>
 
+
+                      <!-- Ads SlideShow -->
+                    <li>
+                        <a href="javascript:void(0);" data-toggle="collapse" data-target="#activies-menu">
+                            <div class="pull-left"><i class="fas fa-building"></i><span
+                                    class="right-nav-text">{{trans('main_trans.Activate accounts')}}</span></div>
+                            <div class="pull-right"><i class="ti-plus"></i></div>
+                            <div class="clearfix"></div>
+                        </a>
+                        <ul id="activies-menu" class="collapse" data-parent="#sidebarnav">
+                            <li><a href="{{route('tripagents')}}">{{trans('tripagent_trans.Activate Tripagent')}}</a></li>
+                        </ul>
+                    </li>
+
                       <!-- Ads SlideShow -->
                       <li>
                         <a href="javascript:void(0);" data-toggle="collapse" data-target="#AdsSlideShow-menu">

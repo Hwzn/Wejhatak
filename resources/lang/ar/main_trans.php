@@ -24,4 +24,5 @@ return [
      'AdsSlideShow'=>'شاشة عرض الاعلانات',
      'Settings'=>'الإعدادت',
      'Currencies'=>'العملات',
+     'Activate accounts'=>'تنشيط الحسابات',
 ];

@@ -4,10 +4,9 @@ header start-->
     <!-- logo -->
     <div class="text-left navbar-brand-wrapper">
     @if(auth('admin')->check())
-
-        <a class="navbar-brand brand-logo" href="{{ url('/admin/dashboard') }}"><img src="{{ URL::asset('assets/images/logo-dark.png') }}" alt=""></a>
-        <a class="navbar-brand brand-logo-mini" href="{{ url('/admin/dashboard') }}"><img src="{{ URL::asset('assets/images/logo-icon-dark.png') }}"
-                alt=""></a>
+      <center>
+        <a class="navbar-brand brand-logo" href="{{ url('/admin/dashboard') }}"><img src="{{ URL::asset('assets/images/logo-dark.jpg') }}" width="100%" height="100%" alt=""></a>
+        </center>
 
      @endif
     </div>

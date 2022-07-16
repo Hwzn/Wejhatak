@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\CurrencyController;
 use App\Http\Controllers\Admin\DropDownlistsController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\RetrunPloicyController;
+use App\Http\Controllers\Admin\TripAgentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -252,6 +253,12 @@ Route::get('/editCountry/{id}',[CountryController::class,'edit'])->name('editCou
  Route::post('/update_country',[CountryController::class,'update'])->name('update_country');
  Route::post('/delete_country/{id}',[CountryController::class,'destroy'])->name('delete_country');
 
+
+
+//tripagent in admin
+Route::get('/tripagents',[TripAgentController::class,'index'])->name('tripagents');
+Route::get('/edit_trpagentstatus/{id}',[TripAgentController::class,'edit'])->name('edit_trpagentstatus');
+Route::post('/updatetripagent_status',[TripAgentController::class,'update'])->name('updatetripagent_status');
 
 
 

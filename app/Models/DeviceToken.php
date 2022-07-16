@@ -14,4 +14,10 @@ class DeviceToken extends Model
     {
         return $this->belongsTo('App\Models\User','user_id');
     }
+    public function trip_agent()
+    {
+        return $this->belongsTo('App\Models\Tripagent','tripagent_id');
+    }
+
+    
 }
