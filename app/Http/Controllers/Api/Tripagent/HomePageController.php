@@ -56,16 +56,16 @@ class HomePageController extends Controller
                           ->whereYear('country_statistics.created_at',date('Y'))
                           ->orderby('requests_number','desc')
                           ->take(7)->get();
-   $data['Max_valuecountriesStatis']=CountryStatistics::select('requests_number')
-                          ->whereMonth('country_statistics.created_at',date('m'))
-                          ->whereYear('country_statistics.created_at',date('Y'))
-                          ->orderby('requests_number','desc')
-                          ->take(1)->get();
-   $data['Min_valuecountriesStatis']=CountryStatistics::select('requests_number')
-                          ->whereMonth('country_statistics.created_at',date('m'))
-                          ->whereYear('country_statistics.created_at',date('Y'))
-                          ->orderby('requests_number','asc')
-                          ->take(1)->get();
+   // $data['Max_valuecountriesStatis']=CountryStatistics::select('requests_number')
+   //                        ->whereMonth('country_statistics.created_at',date('m'))
+   //                        ->whereYear('country_statistics.created_at',date('Y'))
+   //                        ->orderby('requests_number','desc')
+   //                        ->take(1)->get();
+   // $data['Min_valuecountriesStatis']=CountryStatistics::select('requests_number')
+   //                        ->whereMonth('country_statistics.created_at',date('m'))
+   //                        ->whereYear('country_statistics.created_at',date('Y'))
+   //                        ->orderby('requests_number','asc')
+   //                        ->take(1)->get();
       //  return response()->json($countriesStatistic);
     //
     $data['services_count']=TripagentsService::where('tripagent_id',$user_id)->count();
@@ -100,8 +100,27 @@ class HomePageController extends Controller
                                ->where('tripagent_id',$user_id)->orderby('price','asc')->first();
      
     
- 
+  // countriesStatistic_AveragePakages
+  $data['countriesaverage_pricepackage']=CountryStatistics::select('country_statistics.id','country_id',"name->$lang as country_name",'averagepackage_price','country_statistics.created_at','country_statistics.updated_at')
+  ->join('countries','countries.id','country_statistics.country_id')
+  ->whereMonth('country_statistics.created_at',date('m'))
+  ->whereYear('country_statistics.created_at',date('Y'))
+  ->orderby('averagepackage_price','desc')
+  ->take(7)->get();
 
+//   $data['Maxcountriesaverage_pricepacka']=CountryStatistics::select('country_statistics.id','country_id',"name->$lang as country_name",'averagepackage_price','country_statistics.created_at','country_statistics.updated_at')
+//   ->join('countries','countries.id','country_statistics.country_id')
+//   ->whereMonth('country_statistics.created_at',date('m'))
+//   ->whereYear('country_statistics.created_at',date('Y'))
+//   ->orderby('averagepackage_price','desc')
+//   ->take(1)->get();
+
+//   $data['Mincountriesaverage_pricepacka']=CountryStatistics::select('country_statistics.id','country_id',"name->$lang as country_name",'averagepackage_price','country_statistics.created_at','country_statistics.updated_at')
+//   ->join('countries','countries.id','country_statistics.country_id')
+//   ->whereMonth('country_statistics.created_at',date('m'))
+//   ->whereYear('country_statistics.created_at',date('Y'))
+//   ->orderby('averagepackage_price','asc')
+//   ->take(1)->get();
   
      if($data)      
      {

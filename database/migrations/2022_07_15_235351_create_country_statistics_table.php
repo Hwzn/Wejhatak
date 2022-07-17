@@ -18,7 +18,8 @@ class CreateCountryStatisticsTable extends Migration
             $table->foreignId('country_id')->references('id')->on('countries')
             ->onDelete('cascade')
             ->onUpdate('cascade');
-            $table->integer('requests_number');
+            $table->integer('requests_number')->nullable();
+            $table->integer('averagepackage_price')->nullable();
             $table->timestamps();
         });
     }

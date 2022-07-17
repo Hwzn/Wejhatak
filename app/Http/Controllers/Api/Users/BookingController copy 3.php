@@ -234,164 +234,13 @@ if($Service_id=='1')
 
       try{
          DB::beginTransaction();
-   // else{
-      $data=$request->all();
-      $booking_attribute = array();    
-     // $booking_attribute = array_map('utf8mb4_unicode_ci', $booking_attribute);
-    foreach ($data as $key=>$value) {
-        if (strpos($key, "id") || strpos($key, "hild_data") || strpos($key, "raveller_data") ) 
-        {
-            // $arr1[$key] = $value;
-        } else {
-            $booking_attribute[$key] = $value;
-        }
-    }
-
-  // }
-   
-  $package_id='';
-  //  if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
-      if(!empty($data['packaged_id'])) 
-      {
-         $package_id=$data['packaged_id'];
-
-         //add Country Statistics
-         $country=Package::select('country_id')->where('id',$package_id)->first();
-         $country_id=$country->country_id;
-
-         if(CountryStatistics::where('country_id',$country_id)
-         ->whereMonth('created_at',date('m'))
-         ->whereYear('created_at',date('Y'))->exists())
-         {
-            $country_statiistics=CountryStatistics::where('country_id',$country_id)
-            ->whereMonth('created_at',date('m'))
-            ->whereYear('created_at',date('Y'))->first();
-            $country_statiistics->update([
-               'requests_number'=>$country_statiistics->requests_number+1,
-            ]);
-         }
-         else
-         {
-            $country_statiistics=['country_id'=>$country_id,'requests_number'=>1];
-            CountryStatistics::create($country_statiistics);
-
-         }
-            // return response('fffff');
-      }  
-      else
-      {
-         $package_id=Null;
-      } 
-
-      $tripagent_id='';
-    //if(!empty($data['tripagent_id']))  $tripagent_id=$data['tripagent_id']; else $tripagent_id=Null;
-      if(!empty($data['tripagent_id'])) 
-      {
-         $tripagent_id=$data['tripagent_id'];
-         
-         //for get لانشاء واحضار اعلي tripagent on app
-         if(TripagentStatistic::where('tripagent_id',$tripagent_id)->exists())
-            {
-            $trip_statiistics=TripagentStatistic::where('tripagent_id',$tripagent_id)->first();
-            $trip_statiistics->update([
-               'requests_count'=>$trip_statiistics->requests_count+1,
-            ]);
-            }
-            else
-            {
-            $trip_statiistics=['tripagent_id'=>$tripagent_id,'requests_count'=>1];
-            TripagentStatistic::create($trip_statiistics);
-
-            }
-           // return response('dddd');
-      }  
-            else
-      {
-         $tripagent_id=Null;
-      } 
-            //  $service=Serivce::select('id','name')->where('id',$data['service_id'])->first();
-      $service=Serivce::select('name')->where('id',$data['service_id'])->first()->toarray();
-      //$service_name=$service[0];
-      // return response()->json($service['name']);
-      $service_ar=$service['name']['ar'];
-      $service_en=$service['name']['en'];
-      // return response()->json($service_ar);
-
-      $booking=array(
-         'User_id'=>$data['user_id'],
-         'Service_id'=>$data['service_id'],
-         'Tripagent_id'=>$tripagent_id,
-         'Package_id'=>$package_id,
-         'booking_details'=>json_encode($booking_attribute,JSON_UNESCAPED_UNICODE),
-      );
-      $booking_store=Booking::create($booking);
-     // $est=$data['child_data'];
-      // $array=explode(' ',$est[1]);
-     // return response()->json(json_decode($data['child_data']));
-
-      if($booking_store)
-      {
-         $booking=Booking::select('id')->where('User_id',$data['user_id'])->latest('id')->first();
-           if(isset($data['child_data']))
-            {
-
-               foreach($data['child_data'] as $key=>$value)
-               {
-                  
-                  $booking_passanger=BookingPassengerData::create([
-                      'booking_id'=>$booking->id,
-                      'name'=>$value['name'],
-                      'age'=>$value['age'],
-                      'type'=>'child',
-                  ]);
-                  
-               }  
-            }
-            if(isset($data['traveller_data']))
-            {
-
-               foreach($data['traveller_data'] as $key=>$value)
-               {
-                  
-                  $booking_passanger=BookingPassengerData::create([
-                      'booking_id'=>$booking->id,
-                      'name'=>$value['name'],
-                      'age'=>$value['age'],
-                      'phone'=>$value['phone'],
-                      'type'=>'adult',
-                  ]);
-                  
-               }  
-            }
-
-          //notficaions
-          if($tripagent_id !==Null)
-          {
-             //send notifucation for tripagent
-             $user_name=Auth::user()->name;
-             $user_tokens=DeviceToken::where('tripagent_id',$tripagent_id)->pluck('token')->toarray();
-             $noification_title="Booking Reuest notification";
-             $notification_body=$user_name .' '.' Send Booking Request  Number '.'#'.$booking->id ;
-             // return response()->json($notification_body);
-             $message_content=[
-                'en'=>$user_name .' '.' Send '.$service_en. ' with booking number '.'#'.$booking->id,
-               //  'ar'=>'تم ارسال طلب ' . $service_name . 'من ' . $user_name . 'برقم # ' . $booking->id
-                'ar'=>"تم ارسال طلب  $service_ar  من  $user_name برقم #$booking->id"
-               ];
-            $this->sendnotification(null,$request->tripagent_id,$noification_title,$notification_body,$user_tokens,$message_content);
-                //sendnotifaction for admin
-               
-          }
 
          
-        
-       
-        
-       }
-        
          DB::commit();
-         return $this->apiResponse($booking_store,'data saved succefuly',200);
-
+         return response()->json([
+                     'message' => 'HelpRequest Send successfully',
+                     'user' => $user
+                 ], 201);
       }
       catch(\Exception $ex){
          DB::rollBack();
@@ -400,7 +249,158 @@ if($Service_id=='1')
          ], 404);
      }
 
-   
+      // else{
+         $data=$request->all();
+         $booking_attribute = array();    
+        // $booking_attribute = array_map('utf8mb4_unicode_ci', $booking_attribute);
+       foreach ($data as $key=>$value) {
+           if (strpos($key, "id") || strpos($key, "hild_data") || strpos($key, "raveller_data") ) 
+           {
+               // $arr1[$key] = $value;
+           } else {
+               $booking_attribute[$key] = $value;
+           }
+       }
+
+     // }
+      
+     $package_id='';
+     //  if(!empty($data['packaged_id']))  $package_id=$data['packaged_id']; else $package_id=Null;
+       if(!empty($data['packaged_id'])) 
+       {
+          $package_id=$data['packaged_id'];
+
+          //add Country Statistics
+          $country=Package::select('country_id')->where('id',$package_id)->first();
+          $country_id=$country->country_id;
+
+          if(CountryStatistics::where('country_id',$country_id)
+          ->whereMonth('created_at',date('m'))
+          ->whereYear('created_at',date('Y'))->exists())
+          {
+            $country_statiistics=CountryStatistics::where('country_id',$country_id)
+            ->whereMonth('created_at',date('m'))
+            ->whereYear('created_at',date('Y'))->first();
+            $country_statiistics->update([
+               'requests_number'=>$country_statiistics->requests_number+1,
+            ]);
+          }
+          else
+          {
+            $country_statiistics=['country_id'=>$country_id,'requests_number'=>1];
+            CountryStatistics::create($country_statiistics);
+
+          }
+            // return response('fffff');
+       }  
+       else
+       {
+          $package_id=Null;
+       } 
+       $tripagent_id='';
+   //if(!empty($data['tripagent_id']))  $tripagent_id=$data['tripagent_id']; else $tripagent_id=Null;
+   if(!empty($data['tripagent_id'])) 
+   {
+      $tripagent_id=$data['tripagent_id'];
+         if(TripagentStatistic::where('tripagent_id',$tripagent_id)->exists())
+         {
+         $trip_statiistics=TripagentStatistic::where('tripagent_id',$tripagent_id)->first();
+         $trip_statiistics->update([
+            'requests_count'=>$trip_statiistics->requests_count+1,
+         ]);
+         }
+         else
+         {
+         $trip_statiistics=['tripagent_id'=>$tripagent_id,'requests_count'=>1];
+         TripagentStatistic::create($trip_statiistics);
+
+         }
+   }  
+   else
+   {
+      $tripagent_id=Null;
+   } 
+   //  $service=Serivce::select('id','name')->where('id',$data['service_id'])->first();
+    $service=Serivce::select('name')->where('id',$data['service_id'])->first()->toarray();
+    //$service_name=$service[0];
+   // return response()->json($service['name']);
+    $service_ar=$service['name']['ar'];
+    $service_en=$service['name']['en'];
+   // return response()->json($service_ar);
+
+         $booking=array(
+            'User_id'=>$data['user_id'],
+            'Service_id'=>$data['service_id'],
+            'Tripagent_id'=>$tripagent_id,
+            'Package_id'=>$package_id,
+            'booking_details'=>json_encode($booking_attribute,JSON_UNESCAPED_UNICODE),
+         );
+         $booking_store=Booking::create($booking);
+        // $est=$data['child_data'];
+         // $array=explode(' ',$est[1]);
+        // return response()->json(json_decode($data['child_data']));
+
+         if($booking_store)
+         {
+            $booking=Booking::select('id')->where('User_id',$data['user_id'])->latest('id')->first();
+              if(isset($data['child_data']))
+               {
+
+                  foreach($data['child_data'] as $key=>$value)
+                  {
+                     
+                     $booking_passanger=BookingPassengerData::create([
+                         'booking_id'=>$booking->id,
+                         'name'=>$value['name'],
+                         'age'=>$value['age'],
+                         'type'=>'child',
+                     ]);
+                     
+                  }  
+               }
+               if(isset($data['traveller_data']))
+               {
+
+                  foreach($data['traveller_data'] as $key=>$value)
+                  {
+                     
+                     $booking_passanger=BookingPassengerData::create([
+                         'booking_id'=>$booking->id,
+                         'name'=>$value['name'],
+                         'age'=>$value['age'],
+                         'phone'=>$value['phone'],
+                         'type'=>'adult',
+                     ]);
+                     
+                  }  
+               }
+
+             //notficaions
+             if($tripagent_id !==Null)
+             {
+                //send notifucation for tripagent
+                $user_name=Auth::user()->name;
+                $user_tokens=DeviceToken::where('tripagent_id',$tripagent_id)->pluck('token')->toarray();
+                $noification_title="Booking Reuest notification";
+                $notification_body=$user_name .' '.' Send Booking Request  Number '.'#'.$booking->id ;
+                // return response()->json($notification_body);
+                $message_content=[
+                   'en'=>$user_name .' '.' Send '.$service_en. ' with booking number '.'#'.$booking->id,
+                  //  'ar'=>'تم ارسال طلب ' . $service_name . 'من ' . $user_name . 'برقم # ' . $booking->id
+                   'ar'=>"تم ارسال طلب  $service_ar  من  $user_name برقم #$booking->id"
+                  ];
+               $this->sendnotification(null,$request->tripagent_id,$noification_title,$notification_body,$user_tokens,$message_content);
+                   //sendnotifaction for admin
+                  
+             }
+ 
+            
+            return $this->apiResponse($booking_store,'data saved succefuly',200);
+           
+          
+           
+          }
+           
 
   }
       

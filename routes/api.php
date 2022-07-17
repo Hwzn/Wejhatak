@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\TermsCondtionsController;
 use App\Http\Controllers\Api\Tripagent\HomePageController;
+use App\Http\Controllers\Api\Tripagent\MyReservations;
 use App\Http\Controllers\Api\Tripagent\PackageController;
 use App\Http\Controllers\Api\Tripagent\ProfileController;
 use App\Http\Controllers\Api\Tripagent\ServiceController;
@@ -176,7 +177,11 @@ Route::group([
        Route::get('/editpackage/{id}',[PackageController::class,'edit']);
        Route::post('/updatepackage/{id}',[PackageController::class,'update']);
 
-       
+       //myreservations
+       Route::get('/my_reservations/{lang}/{id}',[MyReservations::class,'myreservations']);
+       Route::get('/mypackage_reservations/{lang}/{id}',[MyReservations::class,'package_reservations']);
+       Route::post('change_reservationstatus/{id}/{status}',[MyReservations::class,'change_reservationstatus']);
+
     });
 
 });

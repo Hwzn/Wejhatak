@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\Api\Traits\ApiResponseTrait;
 use App\Models\Country;
+use App\Models\CountryStatistics;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 
@@ -128,7 +129,41 @@ class PackageController extends Controller
             );
 
           $package=Package::create($packages);
+          $total_packagesprice=Package::where('country_id',$request->country_id)
+                   ->where('status','active')
+                   ->whereMonth('created_at',date('m'))
+                   ->whereYear('created_at',date('Y'))
+                   ->get()
+                   ->sum('price');
+          $total_packagescount=Package::where('country_id',$request->country_id)
+                   ->where('status','active')
+                   ->whereMonth('created_at',date('m'))
+                   ->whereYear('created_at',date('Y'))
+                   ->get()->count();
+             //    return response()->json($total_packagesprice);
+          $package_countryaverage=intval($total_packagesprice/$total_packagescount);
+         // return response()->json($package_countryaverage);
+          //add result package_countryaverage in countrystatics
+          if(CountryStatistics::where('country_id',$request->country_id)
+         ->whereMonth('created_at',date('m'))
+         ->whereYear('created_at',date('Y'))->exists())
+         {
+            $country_statiistics=CountryStatistics::where('country_id',$request->country_id)
+            ->whereMonth('created_at',date('m'))
+            ->whereYear('created_at',date('Y'))->first();
+            $country_statiistics->update([
+               'averagepackage_price'=>$package_countryaverage,
+            ]);
+         }
+         else
+         {
+            $country_statiistics=['country_id'=>$request->country_id,'requests_number'=>null,'averagepackage_price'=>$package_countryaverage];
+            CountryStatistics::create($country_statiistics);
+
+         }
+        //add result package_countryaverage in countrystatics
           DB::commit();
+
           if(!is_null($package)) {
             return $this->apiResponse($package,'ok',200);
           }
