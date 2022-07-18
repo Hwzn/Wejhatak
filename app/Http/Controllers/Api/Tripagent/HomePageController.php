@@ -14,8 +14,12 @@ use App\Models\CountryStatistics;
 use App\Models\Package;
 use App\Models\TripagentsService;
 use App\Models\TripagentStatistic;
+use App\Models\UserNotification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+
+use App\Support\Collection;
+
 class HomePageController extends Controller
 {
     use ApiResponseTrait;
@@ -130,6 +134,33 @@ class HomePageController extends Controller
      {
         return $this->apiResponse("",'No Data Found',404);
      }
+    }
+
+    public function shownotification($lang,$page)
+    {
+        
+      $tripagent_id=auth()->user()->id;
+      $lang=strtolower($lang);
+      $today=Carbon::now();
+      $oldnotification=UserNotification::where('tripagent_id',$tripagent_id)
+      ->where('expired_at','<=',$today)  
+      ->delete();
+   
+      $results=UserNotification::select('id','tripagent_id','title',"body->$lang as message_content",'expired_at')
+         ->where('tripagent_id',$tripagent_id)
+          ->where('expired_at','>=',$today)  
+        ->get();
+   
+        $user_notificaion = (new Collection($results))->paginate(10,0,$page);
+        if(!empty($user_notificaion->count()>0))  
+        {
+          return $this->apiResponse($results,'ok',200);
+        }    
+         else{
+       return $this->apiResponse('','No notificaion found',404);
+   
+      }
+
     }
 
    }

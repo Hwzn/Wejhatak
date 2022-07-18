@@ -18,7 +18,10 @@ class CreateHelpRequestsTable extends Migration
             $table->string('ticket_num');
             $table->foreignId('user_id')->references('id')->on('users')
             ->onDelete('cascade')
-            ->onUpdate('cascade');
+            ->onUpdate('cascade')->nullable();
+            $table->foreignId('tripagent_id')->references('id')->on('trip_agents')
+            ->onDelete('cascade')
+            ->onUpdate('cascade')->nullable();
             $table->foreignId('help_id')->references('id')->on('helps')
             ->onDelete('cascade')
             ->onUpdate('cascade');

@@ -20,4 +20,9 @@ class HelpRequest extends Model
         return $this->belongsTo('App\Models\User','user_id');
     }
 
+    public function tripagents()
+    {
+        return $this->belongsTo('App\Models\Tripagent','tripagent_id');
+    }
+
 }

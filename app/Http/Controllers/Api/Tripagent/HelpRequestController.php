@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Users;
+namespace App\Http\Controllers\Api\Tripagent;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -16,7 +16,8 @@ use App\Http\Controllers\Api\Traits\ApiResponseTrait;
 class HelpRequestController extends Controller
 {
     use ApiResponseTrait;
-   public function FormHelpRequest($lang)
+
+    public function FormHelpRequest($lang)
    {
        $FormHelp=Help::select('id',"name->$lang as Problem_Type")->orderby('id','desc')->get();
        if($FormHelp->count()>0)
@@ -38,11 +39,11 @@ class HelpRequestController extends Controller
     public function send_helprequest(Request $request)
     {
         // $user=Auth::user();
-        $helpimage="";
+        $helpimage=null;
         $rand_num=mt_rand(100000000,999999999);
         $validator = Validator::make($request->all(), [
             'help_id' => 'required|exists:helps,id',
-            'user_id' => 'required|exists:users,id',
+            'tripagent_id' => 'required|exists:trip_agents,id',
             'request_details' => 'required|min:5',
             'photo'=>'nullable|image|mimes:jpg,png,jpeg,gif,svg',
         ]);
@@ -58,14 +59,14 @@ class HelpRequestController extends Controller
                   $file=$request->file('photo');
                   $ext=$file->getClientOriginalExtension();
                   $filename=$rand_num.'.'.$ext;
-                  $file->move('assets/uploads/HelpRequests/UsersHelpRequest',$filename);
+                  $file->move('assets/uploads/HelpRequests/TripagentsHelpRequest',$filename);
                   $helpimage=$filename;
 
              }
          
              $user=HelpRequest::create([
                  'ticket_num'=>'#'.$rand_num,
-                 'user_id'=>$request->user_id,
+                 'tripagent_id'=>$request->tripagent_id,
                  'help_id'=>$request->help_id,
                  'request_details'=>$request->request_details,
                  'request_photo'=>$helpimage,
@@ -91,12 +92,12 @@ class HelpRequestController extends Controller
 
     public function showhelprequests($lang,$page)
     {
-     
-        $user_id=Auth::user()->id;
-        if(HelpRequest::where('help_requests.user_id',$user_id)->exists())
+       
+       $tripagentid=Auth::user()->id;
+        if(HelpRequest::where('help_requests.tripagent_id',$tripagentid)->exists())
         {
              $data['helprequests']=HelpRequest::select('help_requests.*',"helps.name->$lang as 'help_name'")
-        ->where('help_requests.user_id',$user_id)
+        ->where('help_requests.tripagent_id',$tripagentid)
         ->join('helps','help_requests.help_id', '=', 'helps.id')
         ->get();
 
@@ -108,7 +109,7 @@ class HelpRequestController extends Controller
            {
               $array['id']=$data->id;
               $array['ticket_num']=$data->ticket_num;
-              $array['user_id']=$data->user_id;
+              $array['tripagent_id']=$data->tripagent_id;
               $array['help_id']=$data->help_id;
               $array['request_details']=$data->request_details;
               $array['status']=$data->status;
@@ -116,26 +117,26 @@ class HelpRequestController extends Controller
               {
                 $array['admin_reply']=$data->admin_reply;
               }
-             $array['created_at']=$data->created_at;
-             $array['updated_at']=$data->updated_at;
-             if(!is_null($data->request_photo))
-             {
-                $array['photo']="$HostName/public/assets/uploads/HelpRequests/UsersHelpRequest/".$data->request_photo;
-            }
+              $array['created_at']=$data->created_at;
+              $array['updated_at']=$data->updated_at;
+              if(!is_null($data->request_photo))
+              {
+                $array['photo']="$HostName/public/assets/uploads/HelpRequests/TripagentsHelpRequest/".$data->request_photo;
+              }
               array_push($helprequest,$array);
            }
        
-          //paginate
-          $results = (new Collection($helprequest))->paginate(10,0,$page);
-          if(!empty($results->count()>0))  
-          {
-            return $this->apiResponse($results,'ok',200);
-          }    
-          else{
-            return $this->apiResponse("",'Thepervious page  is Last Page',200);
-
-          }  
-       //paginate
+         //paginate
+           $results = (new Collection($helprequest))->paginate(10,0,$page);
+           if(!empty($results->count()>0))  
+           {
+             return $this->apiResponse($results,'ok',200);
+           }    
+           else{
+             return $this->apiResponse("",'Thepervious page  is Last Page',200);
+ 
+           }  
+        //paginate
 
         }
         
@@ -147,6 +148,7 @@ class HelpRequestController extends Controller
             ], 404);
         }
        
+        
        
     }
     else

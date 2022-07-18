@@ -100,10 +100,7 @@ class TripAgentAuthController extends Controller
         }
     }
 
-    public function userprofile()
-    {
-        return Auth::user();
-    }
+   
 
     public function register(Request $request)
     {

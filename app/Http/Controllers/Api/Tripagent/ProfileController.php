@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\Traits\ApiResponseTrait;
 use App\Support\Collection;
 use Carbon\Carbon;
 use App\Models\UserNotification;
+use Illuminate\Support\Facades\File;
 
 class ProfileController extends Controller
 {
@@ -46,29 +47,113 @@ public function resetpassword(Request $request)
 
 }
 //resetpassword
-public function shownotification($lang,$page)
+
+public function userprofile()
 {
- $lang=strtolower($lang);
- $today=Carbon::now();
- $tripagent_id=Auth::user()->id;
- $oldnotification=UserNotification::where('tripagent_id',$tripagent_id)
- ->where('expired_at','<=',$today)  
- ->delete();
+  // return Auth::user(); //get all user data
+  // return auth()->user()->id;
+   //   return Auth::user()->id;
+   $tripagent=Auth::user();
+   $urlhost=request()->getHttpHost();
+  // $user=auth()->user();
+   $user['id']=$tripagent->id;
+   $user['name']=$tripagent->name;
+   $user['phone']=$tripagent->phone;
+   $user['address']=$tripagent->address;
+   $user['starnumber']=$tripagent->starnumber;
+   $user['evaulation']=$tripagent->evaulation;
+   $user['Agency_id']=$tripagent->Agency_id;
+   $user['Agency_name']=$tripagent->Agency->name;
+   $user['Countries']=json_decode($tripagent->Countries);
+   $user['Commercial_RegistrationNo']=$tripagent->Commercial_RegistrationNo;
+   $user['CommercialRegistration_ExpiryDate']=$tripagent->CommercialRegistration_ExpiryDate;
+   $user['license_number']=$tripagent->license_number;
+   $user['license_expiry_date']=$tripagent->license_expiry_date;
+   $user['status']=$tripagent->status;
 
- $results=UserNotification::select('id','tripagent_id','title',"body->$lang as message_content",'expired_at')
-     ->where('tripagent_id',$tripagent_id)
-     ->where('expired_at','>=',$today)  
-   ->get();
-
-   $user_notificaion = (new Collection($results))->paginate(10,0,$page);
-   if(!empty($user_notificaion->count()>0))  
+   // $user['photo']="$urlhost/public/assets/uploads/Profile/UserProfile/".auth()->user()->photo;
+   $photo=$tripagent->photo;
+   if(!$photo==null)
    {
-     return $this->apiResponse($results,'ok',200);
-   }    
-    else{
-  return $this->apiResponse('','No notificaion found',404);
-
- }
+     $user['photo']="$urlhost/public/assets/uploads/Profile/TripAgent/".$tripagent->photo;
+   }
+   else
+   {
+       $user['photo']="$urlhost/public/assets/uploads/Profile/TripAgent/".'defaultimage.jpg';
+   }
+   $photo_profile=$tripagent->profile_photo;
+   if(!$photo_profile==null)
+   {
+     $user['photo_profile']="$urlhost/public/assets/uploads/Profile/TripAgent/profile/".$tripagent->profile_photo;
+   }
+   else
+   {
+       $user['photo_profile']="$urlhost/public/assets/uploads/Profile/TripAgent/profile/".'defaultimage.jpg';
+   }
+   $user['verified_at']=$tripagent->verified_at;
+   $user['created_at']=$tripagent->created_at;
+   $user['updated_at']=$tripagent->updated_at;
+   return response()->json($user);
 }
-  
+  public function updateuser(Request $request)
+  {
+      $currentuser=auth()->user();
+     //return response($currentuser);
+    $data = Validator::make($request->all(), [
+      'name' => 'required|string|max:255|',
+      'phone' => 'required|string|unique:trip_agents,phone,'.$currentuser->id,
+      //  'password' => ['required', 'confirmed', Rules\Password::defaults()],
+       'photo'=>'image|mimes:jpg,png,jpeg,gif,svg',
+ ]);
+ if($data->fails()){
+     return response()->json($data->errors()->toJson(), 400);
+ }
+ try{
+    
+    DB::beginTransaction();
+    // $image=$user->photo;
+  //$currentuser=User::findorfail($request->user_id);
+    $image=$currentuser->photo;
+       //return response($image);
+
+     if($request->hasfile('photo')) 
+     {
+         //هشيل الصورة الديمة
+         $path='public/assets/uploads/Profile/TripAgent/'.$image;
+         if(File::exists($path))
+          {
+              File::delete($path);
+          }  
+        
+          $file=$request->file('photo');
+          $ext=$file->getClientOriginalExtension();
+          $filename=time().'.'.$ext;
+          $file->move('public/assets/uploads/Profile/TripAgent',$filename);
+          $image=$filename;
+     }
+ 
+     $user=Tripagent::where('id',$currentuser->id)->update([
+         'name'=>$request->name,
+         'phone'=>$request->phone,
+         'verified_at'=>$currentuser->verified_at,
+         'photo'=>$image,
+     ]);
+
+     DB::commit();
+     return response()->json([
+                 'message' => 'User successfully Updated',
+                 'user' => $user
+             ], 201);
+                 
+ 
+ }
+ catch(\Exception $ex){
+     DB::rollBack();
+     return response()->json([
+         'message' => $ex,
+         'user' => 'Error in update'
+     ], 404);
+ }
+
+  }
 }

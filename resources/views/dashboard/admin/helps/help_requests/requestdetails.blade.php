@@ -24,6 +24,7 @@
                                     :</label>
                                     <input class="form-control" name="request_id" type="hidden" />
                                     <input class="form-control" name="user_id" type="hidden" />
+                                    <input class="form-control" name="tripagent_id" type="hidden" />
                                     <input class="form-control" name="ticket_num" type="hidden" />
 
                                     
@@ -35,7 +36,7 @@
                                     for="exampleFormControlTextarea1">{{ trans('helps_trans.admin_reply') }}
                                     :</label>
                                 <textarea class="form-control" name="admin_reply" id="exampleFormControlTextarea1"
-                                          rows="6"></textarea>
+                                          rows="6" ></textarea>
                             </div>
                             <br><br>
                     </div>

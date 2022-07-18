@@ -105,10 +105,16 @@ class HelpController extends Controller
 
     public function view_attachment($filename)
     {
-      return response()->download('public/assets/uploads/UserHelpRequests/'.$filename);
+      return response()->download('assets/uploads/HelpRequests/UsersHelpRequest/'.$filename);
+
+    }
+    public function viewtripagent_attachment($filename)
+    {
+      return response()->download('assets/uploads/HelpRequests/TripagentsHelpRequest/'.$filename);
 
     }
 
+    
     public function showrequestdetials($id)
     {
       $request_details=HelpRequest::findorfail($id);
@@ -117,6 +123,7 @@ class HelpController extends Controller
  
     public function updaterequesthelp_details(Request $request)
     {
+     // return response()->json($request);
       $validator = Validator::make($request->all(),
       [
            'admin_reply'=>'required',
@@ -131,27 +138,37 @@ class HelpController extends Controller
       return response()->json(['error'=>$validator->errors()->all()]);
 
       }
-      else{
-        $user_tokens=DeviceToken::where('user_id',$request->user_id)->pluck('token')->toarray();
-        $noification_title="Update Hlep Request";
-        $notification_body='Your Request Number '.'#'.$request->ticket_num .' has been update2022';
-        // return response()->json($notification_body);
-
+      else
+      {
+        
         $data=HelpRequest::where('id',$request->request_id)->update([
           'admin_reply'=>$request->admin_reply,
           'status'=>'closed'
         ]);
-  
-        $message_content=['en'=>'Your Request Number '.$request->ticket_num .' has been update','ar'=>'طلب المساعدة الخاص بكم رقم  '.$request->ticket_num .'تم الرد عليه من قبل الادمن'];
 
-        if(!is_null($data))
+        //send notfication for user
+        $message_content=['en'=>"Your Request Number $request->ticket_num has been update",'ar'=>"طلب المساعدة الخاص بكم رقم  $request->ticket_num تم الرد عليه من قبل الادمن"];
+        if(!is_null($request->user_id))
         {
-           $this->sendnotification($request->user_id,null,$noification_title,$notification_body,$user_tokens,$message_content);
-          //  $this->store_notification($request->user_id,$noification_title,$notification_body);
+          $user_tokens=DeviceToken::where('user_id',$request->user_id)->pluck('token')->toarray();
+          $noification_title="Update Hlep Request";
+          $notification_body='Your Request Number '.'#'.$request->ticket_num .' has been update2022';
+          $this->sendnotification($request->user_id,null,$noification_title,$notification_body,$user_tokens,$message_content);
+        }
+        elseif(!is_null($request->tripagent_id))
+        {
+          $user_tokens=DeviceToken::where('tripagent_id',$request->tripagent_id)->pluck('token')->toarray();
+          $noification_title="Update Hlep Request";
+          $notification_body='Your Request Number '.'#'.$request->ticket_num .' has been update';
+          $this->sendnotification(null,$request->tripagent_id,$noification_title,$notification_body,$user_tokens,$message_content);
 
+        }
+       
+          //  $this->store_notification($request->user_id,$noification_title,$notification_body);
            toastr()->success(trans('messages_trans.success'));
            return response()->json(['success'=>'Added new records.']);
-        }
+
+
       }
     }
 }

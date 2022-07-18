@@ -38,6 +38,7 @@
                                 <th>#</th>
                                 <th>{{trans('helps_trans.ticket_number')}}</th>
                                 <th>{{trans('helps_trans.user_name')}}</th>
+                                <th></th>
                                 <th>{{trans('helps_trans.help_type')}}</th>
                                 <th>{{trans('helps_trans.status')}}</th>
                                 <th>{{trans('helps_trans.Request_Date')}}</th>
@@ -51,7 +52,26 @@
                                 
                                     <td>{{ $loop->iteration  }}</td>
                                     <td>{{ $request->ticket_num }}</td>
-                                    <td>{{ $request->users->name }}</td>
+                                    @if(!is_null($request->user_id))
+                                     <td>{{ $request->users->name }}</td> 
+                                    @elseif(!is_null($request->tripagent_id))
+                                    <td>{{ $request->tripagents->name }}</td> 
+                                    @else
+                                     <td>no_user</td>
+                                    @endif
+                                    @if(!is_null($request->user_id))
+                                     <td>
+                                     <label
+                                         class="badge badge-success">User</label>
+                                     </td> 
+                                    @elseif(!is_null($request->tripagent_id))
+                                    <td>
+                                       <label
+                                         class="badge badge-success">Tripagent</label>
+                                    </td> 
+                                    @else
+                                     <td>no_user</td>
+                                    @endif
                                     <td>{{ $request->helps->name }}</td>
                                     <td>
                                        @if ($request->status === 'pending')
@@ -66,11 +86,21 @@
                                     <td>{{ $request->created_at}}</td>
                                     <td>
                                     @if(!empty($request->request_photo))
-                                    <a class="btn btn-outline-info btn-sm"
+                                       @if(!is_null($request->user_id))
+                                          <a class="btn btn-outline-info btn-sm"
                                                            href="{{route('view_attachment',$request->request_photo)}}"
-                                                           role="button"><i class="fas fa-download"></i>&nbsp; {{trans('helps_trans.View')}}</a>
+                                                        role="button"><i class="fas fa-download"></i>&nbsp; {{trans('helps_trans.View')}}</a>
+                                       
+                                         @elseif(!is_null($request->tripagent_id))
+                                         <a class="btn btn-outline-info btn-sm"
+                                                           href="{{route('viewtripagent_attachment',$request->request_photo)}}"
+                                                        role="button"><i class="fas fa-download"></i>&nbsp; {{trans('helps_trans.View')}}</a>
+                                        @else
+
+                                         @endif
                                       @endif
                                     </td>
+                                   
                                     <td>
                                     <a class="btn btn-info btn-sm" href="#"  title="view problem > {{$request->ticket_num}}"
                                                   data-href="{{ route('requesthelpdetails',$request->id) }}"
@@ -118,8 +148,10 @@
             admin_reply:$("#requestdetail_Modola form textarea[name='admin_reply']").val(),
             request_id:$("#requestdetail_Modola form input[name='request_id']").val(),
             user_id:$("#requestdetail_Modola form input[name='user_id']").val(),
+            tripagent_id:$("#requestdetail_Modola form input[name='tripagent_id']").val(),
             ticket_num:$("#requestdetail_Modola form input[name='ticket_num']").val(),
 
+           
         };
        
         }
@@ -157,8 +189,29 @@ var getHref = button.data('href'); //get button href
         {
            
             $("#requestdetail_Modola form textarea[name='usermessage']").val(data.request_details);
-            $("#requestdetail_Modola form textarea[name='admin_reply']").val(data.admin_reply);
-            $("#requestdetail_Modola form input[name='user_id']").val(data.user_id);
+           // $("#requestdetail_Modola form textarea[name='admin_reply']").val(data.admin_reply);
+
+     if(data.admin_reply==null)
+       {
+        $("#requestdetail_Modola form textarea[name='admin_reply']").val(null);
+        $("#requestdetail_Modola form textarea[name='admin_reply']").prop('readonly',false);
+       }
+       else
+       {
+         $("#requestdetail_Modola form textarea[name='admin_reply']").val(data.admin_reply);
+         $("#requestdetail_Modola form textarea[name='admin_reply']").prop('readonly',true);
+
+       }
+            if(data.user_id !==null)
+            {
+                $("#requestdetail_Modola form input[name='user_id']").val(data.user_id);
+                $("#requestdetail_Modola form input[name='tripagent_id']").val(null);
+
+            }
+            else{
+                $("#requestdetail_Modola form input[name='user_id']").val(null);
+                $("#requestdetail_Modola form input[name='tripagent_id']").val(data.tripagent_id);
+            }
             $("#requestdetail_Modola form input[name='ticket_num']").val(data.ticket_num);
             $("#requestdetail_Modola form input[name='admin_reply']").val(data.admin_reply);
             

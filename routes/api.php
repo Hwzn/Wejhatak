@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CommonQuestions;
 use App\Http\Controllers\Api\TermsCondtionsController;
+use App\Http\Controllers\Api\Tripagent\HelpRequestController as TripagentHelpRequestController;
 use App\Http\Controllers\Api\Tripagent\HomePageController;
 use App\Http\Controllers\Api\Tripagent\MyReservations;
 use App\Http\Controllers\Api\Tripagent\PackageController;
@@ -109,7 +110,7 @@ Route::group([
         //help_requests
         Route::get('/FormHelpRequest/{lang}',[HelpRequestController::class,'FormHelpRequest']); 
         Route::post('/send_helprequest',[HelpRequestController::class,'send_helprequest']); 
-        Route::get('/showhelp_requests/{lang}/{user_id}',[HelpRequestController::class,'showhelprequests']); 
+        Route::get('/showhelp_requests/{lang}/{page}',[HelpRequestController::class,'showhelprequests']); 
         //Favourite_TripAgent
         Route::get('/UserFavourite_TripAgent/{lang}/{User_id}',[FaviourtTripagentController::class,'index']);
         Route::get('/UserFavourite_ShowTripAgent/{lang}/{id}',[FaviourtTripagentController::class,'showtripagent']);
@@ -156,7 +157,6 @@ Route::group([
         'prefix' => 'tripagent',
     ], function ($router) {
         Route::post('/logout',[TripAgentAuthController::class, 'logout'])->name('logout');
-        Route::get('/userprofile',[TripAgentAuthController::class, 'userprofile'])->name('userprofile');
         Route::get('/myservices/{lang}',[ServiceController::class, 'myservices']);
         Route::get('/Services_List/{lang}',[ServiceController::class, 'Services_List']);
         Route::post('/Add_Service',[ServiceController::class, 'Add_Service']);
@@ -165,10 +165,12 @@ Route::group([
 
 
         //userprofile
+        Route::get('/userprofile',[ProfileController::class, 'userprofile'])->name('userprofile');
         Route::post('/resetpassword',[ProfileController::class, 'resetpassword']);
+        Route::post('/updateuser',[ProfileController::class, 'updateuser']);
+
        //homepage
        Route::get('/HomePage/{lang}',[HomePageController::class, 'index']);
-       Route::get('/shownotification/{lang}/{page}',[ProfileController::class, 'shownotification']);
 
        //Packages
        Route::get('/package_form',[PackageController::class,'package_form']);
@@ -181,6 +183,14 @@ Route::group([
        Route::get('/my_reservations/{lang}/{id}',[MyReservations::class,'myreservations']);
        Route::get('/mypackage_reservations/{lang}/{id}',[MyReservations::class,'package_reservations']);
        Route::post('change_reservationstatus/{id}/{status}',[MyReservations::class,'change_reservationstatus']);
+
+       //HelpRequests
+       Route::get('/FormHelpRequest/{lang}',[TripagentHelpRequestController::class,'FormHelpRequest']); 
+        Route::post('/send_helprequest',[TripagentHelpRequestController::class,'send_helprequest']); 
+        Route::get('/showhelp_requests/{lang}/{page}',[TripagentHelpRequestController::class,'showhelprequests']); 
+    
+        //show_notifcations
+        Route::get('/my_notifications/{lang}/{page}',[HomePageController::class,'shownotification']);
 
     });
 
